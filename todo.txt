@@ -1,0 +1,17 @@
+Things left to do with nouns:
+
+Need to allow strong masculine noun to not need 's' ending in nominative form to get root
+(IE: wair is SM nom, not wairs)
+
+Need to put in devoicing rule
+(IE: b -> f, d -> þ, z -> s when those 3 characters are the last ones, or when followed by an 's').
+
+Need to put in j stem nouns
+(IE: harjis is SM nom, with plural harjos)
+(IE: siponeis is SM nom, with plural siponjos)
+(IE: fairguni is SN nom, with plural fairgunja)
+(IE: gawi is SN nom, with plural gauja)
+(IE: sunja is normal)
+(IE: mawi is SF nom, but mauja is SF acc)
+
+Then move onto other grammatical stuff
