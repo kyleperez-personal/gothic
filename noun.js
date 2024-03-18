@@ -4,6 +4,14 @@
 // Too used to Python + friends
 function print(arg) { console.log(arg); }
 
+function isVowel(x) { 
+	return ("aeiouAEIOU".indexOf(x) != -1); 
+}
+
+function isConsanant(x) {
+	return !isVowel(x);
+}
+
 // Data container for holding case endings for nouns.
 class nountype {
 	constructor(name, case_endings) {
@@ -33,6 +41,9 @@ class nountype {
 
 // All the different types of nouns so far.
 const strong_masculine = new nountype('Strong Masculine', [['-s', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
+const strong_masculine_rending = new nountype('Strong Masculine (r ending)', [['-', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
+const strong_masculine_jstem_shortvowel = new nountype('Strong Masculine (j stem, w/ short vowel)', [['-is', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
+const strong_masculine_jstem_longvowel = new nountype('Strong Masculine (j stem, w/ long vowel)', [['-is', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
 const strong_neuter = new nountype('Strong Neuter', [['-', '--', '-a'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-a'], ['--', '--', '--']]);
 const strong_feminine = new nountype('Strong Feminine', [['-a', '--', '-os'], ['-os', '--', '-o'], ['-ai', '--', '-om'], ['-a', '--', '-os'], ['--', '--', '--']]);
 const weak_masculine = new nountype('Weak Masculine', [['-a', '--', '-ans'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-an', '--', '-ans'], ['--', '--', '--']]);
@@ -72,6 +83,36 @@ const Masculine = 'masculine';
 const Neuter = 'neuter';
 const Feminine = 'feminine';
 
+// Allowed consanants, vowels, and Long and short vowels
+const Consanants = ['b', 'g', 'd', 'q', 'z', 'h', 'þ', 'k', 'l', 'm', 'n', 'j', 'p', 'r', 's', 't', 'w', 'f', 'x', 'ƕ'];
+const Vowels = ['a', 'ai', 'e', 'i', 'ei', 'o', 'au', 'u', 'iu'];
+const ShortVowels = ['a', 'i', 'u'];
+const LongVowels = ['e', 'o', 'ei'];
+
+const Alphabet       = ['a', 'b', 'd', 'e', 'f', 'g', 'h', 'ƕ', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'þ', 'u', 'w', 'x', 'z'];
+const GothicAlphabet = ['𐌰', '𐌱', '𐌳', '𐌴', '𐍆', '𐌲', '𐌷', '𐍈', '𐌹', '𐌾', '𐌺', '𐌻', '𐌼', '𐌽', '𐍉', '𐍀', '𐌵', '𐍂', '𐍃', '𐍄', '𐍈', '𐌿', '𐍅', '𐍇', '𐌶'];
+
+function Gothicize(words) {
+	let gothic_words = '';
+	for (let char of words) {
+		let ind = Alphabet.indexOf(char);
+		if (ind < 0) gothic_words += char;
+		else gothic_words += GothicAlphabet[ind];
+	}
+
+	return gothic_words;
+}
+
+function Romanize(words) {
+	let roman_words = '';
+	for (let char of words) {
+		let ind = GothicAlphabet.indexOf(char);
+		if (ind < 0) roman_words += char;
+		else roman_words += Alphabet[ind];
+	}
+
+	return roman_words;
+}
 
 // Getting the root of a noun
 function get_noun_root(noun, noun_type) {
@@ -81,7 +122,21 @@ function get_noun_root(noun, noun_type) {
 		case strong_neuter:
 			return noun;
 		// Nouns whose NS has 1 more character than the stem
+		// Strong masculine has special case when 'r' is end of stem
 		case strong_masculine:
+			if (noun.slice(-1) == 'r') {
+				noun_type.nominative_singular = strong_masculine_rending.nominative_singular;
+				return noun;
+			}
+			else if (noun.slice(-3) == 'jis') {
+				noun_type.nominative_singular = strong_masculine_jstem_shortvowel.nominative_singular;
+				return noun.slice(0, -2);
+			}
+			else if (noun.slice(-3) == 'eis') {
+				noun_type.nominative_singular = strong_masculine_jstem_longvowel.nominative_singular;
+				noun_type.genitive_singular = strong_masculine_jstem_longvowel.genitive_singular;
+				return noun.slice(0, -3) + 'j';
+			}
 		case strong_feminine:
 		case weak_masculine:
 		case weak_neuter:
@@ -118,6 +173,31 @@ class noun {
 		this.gender = gender;
 		this.root = get_noun_root(name, noun_type);
 		this.case_endings = noun_type;
+		this.is_long_jstem = this.#is_long_jstem();
+	}
+
+	#is_long_jstem() {
+		// First check if noun is a j stem to begin with
+		if (this.root.slice(-1) != 'j') return false;
+		// Then see if stem satisfies CvCCj patern. If so, it is a long j stem for all vowels v and constanants C
+		// To see if it is a short vowel j stem, has pattern of CvCj- where v is short for ending letters
+		let imp_char = this.root.slice(-3, -2);
+		if (isConsanant(imp_char)) return true;
+		// Take advantage of the fact that we have a CvC... like pattern; complete vowel is always preceeded by a consanant
+		// In Gothic, the vowels can be represented by two characters though, so need to know this
+		else {
+			let prev_imp_char = this.root.slice(-4, -3);
+			let vowel = '';
+			if (isConsanant(prev_imp_char)) {
+				vowel = imp_char;
+			}
+			else {
+				vowel = prev_imp_char + imp_char;
+			}
+
+			if (LongVowels.includes(vowel)) return true; // Long Vowel values are 'e' 'o' and 'ei'
+			else return false; // short vowels are 'a', 'i', and 'u', but also includes all the others for now.
+		}
 	}
 
 	// Given a specific case + number, decline a general noun
@@ -166,7 +246,14 @@ class noun {
 			return ending;
 		}
 		else {
-			return this.root + ending;
+			let declination = this.root + ending;
+			if (declination.slice(-1) == 'j') {
+				declination = declination.slice(0, -1) + 'i';
+			}
+			else if (this.is_long_jstem && declination.slice(-3) == 'jis') {
+				declination = declination.slice(0,-3) + 'eis';
+			}
+			return declination
 		}
 
 	}
@@ -214,9 +301,24 @@ class noun {
 
 }
 
+
 // Strong Masculine Noun
+/*
 let dags = new noun('dags', Masculine, strong_masculine);
 dags.print_cases();
+
+// Strong Masculine Noun that ends in 'r'
+let wair = new noun('wair', Masculine, strong_masculine);
+wair.print_cases();
+
+// Strong Masculine Noun with j ending stem with short vowels
+// Short vowels: a i u
+let harjis = new noun('harjis', Masculine, strong_masculine);
+harjis.print_cases();
+
+// Long vowels: e o ei
+let siponeis = new noun('siponeis', Masculine, strong_masculine);
+siponeis.print_cases();
 
 // Strong Neuter Noun
 let waurd = new noun('waurd', Neuter, strong_neuter);
@@ -297,6 +399,10 @@ gairnei.print_cases();
 // Class 3 Weak Verbal Noun:
 let libains = new noun('libains', Feminine, class3weak_verbal);
 libains.print_cases();
+*/
+
+print(Gothicize('ik im gredags'));
+print(Romanize('𐌹𐌺 𐌹𐌼 𐌲𐍂𐌴𐌳𐌰𐌲𐍃'));
 
 //print("hiþar");
 //print("𐌷𐌰𐌻𐌻𐍉");
