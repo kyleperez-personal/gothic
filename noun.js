@@ -45,7 +45,11 @@ const strong_masculine_rending = new nountype('Strong Masculine (r ending)', [['
 const strong_masculine_jstem_shortvowel = new nountype('Strong Masculine (j stem, w/ short vowel)', [['-is', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
 const strong_masculine_jstem_longvowel = new nountype('Strong Masculine (j stem, w/ long vowel)', [['-is', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
 const strong_neuter = new nountype('Strong Neuter', [['-', '--', '-a'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-a'], ['--', '--', '--']]);
+const strong_neuter_jstem_shortvowel = new nountype('Strong Neuter', [['-', '--', '-a'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-a'], ['--', '--', '--']]);
+const strong_neuter_jstem_longvowel = new nountype('Strong Neuter', [['-', '--', '-a'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-a'], ['--', '--', '--']]);
 const strong_feminine = new nountype('Strong Feminine', [['-a', '--', '-os'], ['-os', '--', '-o'], ['-ai', '--', '-om'], ['-a', '--', '-os'], ['--', '--', '--']]);
+const strong_feminine_jstem_shortvowel = new nountype('Strong Feminine', [['-a', '--', '-os'], ['-os', '--', '-o'], ['-ai', '--', '-om'], ['-a', '--', '-os'], ['--', '--', '--']]);
+const strong_feminine_jstem_longvowel = new nountype('Strong Feminine', [['-', '--', '-os'], ['-os', '--', '-o'], ['-ai', '--', '-om'], ['-a', '--', '-os'], ['--', '--', '--']]);
 const weak_masculine = new nountype('Weak Masculine', [['-a', '--', '-ans'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-an', '--', '-ans'], ['--', '--', '--']]);
 const weak_neuter = new nountype('Weak Neuter', [['-o', '--', '-ona'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-o', '--', '-ona'], ['--', '--', '--']]);
 const weak_feminine_oending = new nountype('Weak Feminine (-o ending)', [['-o', '--', '-ons'], ['-ons', '--', '-ono'], ['-on', '--', '-om'], ['-on', '--', '-ons'], ['--', '--', '--']]);
@@ -99,7 +103,6 @@ function Gothicize(words) {
 		if (ind < 0) gothic_words += char;
 		else gothic_words += GothicAlphabet[ind];
 	}
-
 	return gothic_words;
 }
 
@@ -110,7 +113,6 @@ function Romanize(words) {
 		if (ind < 0) roman_words += char;
 		else roman_words += Alphabet[ind];
 	}
-
 	return roman_words;
 }
 
@@ -120,24 +122,22 @@ function get_noun_root(noun, noun_type) {
 	switch(noun_type) {
 		// Nouns whose NS is the stem
 		case strong_neuter:
+		case strong_masculine_rending:
 			return noun;
-		// Nouns whose NS has 1 more character than the stem
-		// Strong masculine has special case when 'r' is end of stem
-		case strong_masculine:
-			if (noun.slice(-1) == 'r') {
-				noun_type.nominative_singular = strong_masculine_rending.nominative_singular;
-				return noun;
+		// Special cases for short and long vowel assimilation with j stem nouns
+		// 'auj' root ending goes to 'awi'
+		// while bare 'j' ending goes to 'i' 
+		case strong_neuter_jstem_shortvowel:
+		case strong_feminine_jstem_longvowel:
+		case strong_neuter_jstem_longvowel:
+			if (noun.slice(-2, -1) == 'w') {
+				return noun.slice(0, -2) + 'uj';
 			}
-			else if (noun.slice(-3) == 'jis') {
-				noun_type.nominative_singular = strong_masculine_jstem_shortvowel.nominative_singular;
-				return noun.slice(0, -2);
-			}
-			else if (noun.slice(-3) == 'eis') {
-				noun_type.nominative_singular = strong_masculine_jstem_longvowel.nominative_singular;
-				noun_type.genitive_singular = strong_masculine_jstem_longvowel.genitive_singular;
-				return noun.slice(0, -3) + 'j';
-			}
+			return noun.slice(0, -1) + 'j';
+		// Nouns whose NS just has 1 extra letter on the stem
+		case strong_masculine:	
 		case strong_feminine:
+		case strong_feminine_jstem_shortvowel:
 		case weak_masculine:
 		case weak_neuter:
 		case weak_feminine_oending:
@@ -151,6 +151,7 @@ function get_noun_root(noun, noun_type) {
 		case class3weak_verbal:
 			return noun.slice(0, -1);
 		// Nouns whose NS has 2 more characters than the stem
+		case strong_masculine_jstem_shortvowel:
 		case weak_feminine_eiending:
 		case rstem:
 		case strong_ustem:
@@ -158,6 +159,9 @@ function get_noun_root(noun, noun_type) {
 		case special_fon:
 		case special_gairnei:
 			return noun.slice(0, -2);
+		// Extra special case for long vowel j stem
+		case strong_masculine_jstem_longvowel:
+			return noun.slice(0, -3) + 'j';
 		default:
 			print('Unexpected noun type of "' + noun_type.name + '".');
 			return '--';
@@ -195,21 +199,23 @@ class noun {
 				vowel = prev_imp_char + imp_char;
 			}
 
-			if (LongVowels.includes(vowel)) return true; // Long Vowel values are 'e' 'o' and 'ei'
-			else return false; // short vowels are 'a', 'i', and 'u', but also includes all the others for now.
+			// Long Vowel values are 'e' 'o' and 'ei'
+			// short vowels are 'a', 'i', and 'u', but also includes all the others for now.
+			return LongVowels.includes(vowel);
 		}
 	}
 
 	// Given a specific case + number, decline a general noun
 	decline(noun_case, number) {
 
-		let declination = 'Unknown Declanation';
+		let declination = 'Unknown Declination';
 		let ending = 'null';
 
 		if (number != Singular && number != Dual && number != Plural) {
 			declination = 'Unknown Noun Number "' + number + '"';
 		}
 
+		// Standard declination from table
 		if (noun_case == Nominative) {
 			if (number == Singular) { ending = this.case_endings.nominative_singular; }
 			//else if (number == Dual) { ending = this.case_endings.nominative_dual; }
@@ -239,22 +245,32 @@ class noun {
 			declination = 'Unknown Noun Case "' + noun_case + '"';
 		}
 
+		// If no declination found, show error
 		if (ending == 'null') {
 			return declination;
 		}
+		// If no declination given, show just '-'
 		else if (ending == '-') {
 			return ending;
 		}
-		else {
-			let declination = this.root + ending;
+		// Otherwise, need to construct some special cases related to j stem nouns
+		else if (this.root.slice(-1) == 'j') {
+			declination = this.root + ending;
+			// If declined version ends in bare 'j'
 			if (declination.slice(-1) == 'j') {
+				// Reduce 'j' to 'i' unless have 'auj' cluster, then go to 'awi'.
 				declination = declination.slice(0, -1) + 'i';
+				if (declination.slice(-2, -1) == 'u') {
+					declination = declination.slice(0, -2) + 'wi';
+				}
 			}
-			else if (this.is_long_jstem && declination.slice(-3) == 'jis') {
+			// Otherwise if noun is long j stem (masculine or neuter are the ones that apply), assimilate 'jis' to eis'
+			else if (this.is_long_jstem && ending == 'is') {
 				declination = declination.slice(0,-3) + 'eis';
 			}
-			return declination
+			return declination;
 		}
+		return this.root + ending;
 
 	}
 
@@ -305,29 +321,64 @@ class noun {
 // Strong Masculine Noun
 /*
 let dags = new noun('dags', Masculine, strong_masculine);
+print(dags.root);
+print(dags.decline(Nominative, Singular) + ' ' + dags.case_endings.name);
 dags.print_cases();
 
+
 // Strong Masculine Noun that ends in 'r'
-let wair = new noun('wair', Masculine, strong_masculine);
+let wair = new noun('wair', Masculine, strong_masculine_rending);
+print(wair.decline(Nominative, Singular) + ' ' + wair.case_endings.name);
 wair.print_cases();
 
 // Strong Masculine Noun with j ending stem with short vowels
 // Short vowels: a i u
-let harjis = new noun('harjis', Masculine, strong_masculine);
+let harjis = new noun('harjis', Masculine, strong_masculine_jstem_shortvowel);
+print(harjis.decline(Nominative, Singular) + ' ' + harjis.case_endings.name);
 harjis.print_cases();
 
 // Long vowels: e o ei
-let siponeis = new noun('siponeis', Masculine, strong_masculine);
+let siponeis = new noun('siponeis', Masculine, strong_masculine_jstem_longvowel);
+print(siponeis.decline(Nominative, Singular) + ' ' + siponeis.case_endings.name);
 siponeis.print_cases();
+*/
+
+
+
+
 
 // Strong Neuter Noun
+/*
 let waurd = new noun('waurd', Neuter, strong_neuter);
 waurd.print_cases();
 
+let fairguni = new noun('fairguni', Neuter, strong_neuter_jstem_shortvowel);
+fairguni.print_cases();
+
+let gawi = new noun('gawi', Neuter, strong_neuter_jstem_longvowel);
+gawi.print_cases();
+*/
+
+
 // Strong Feminine Noun
+/*
 let giba = new noun('giba', Feminine, strong_feminine);
 giba.print_cases();
 
+
+let sunja = new noun('sunja', Feminine, strong_feminine_jstem_shortvowel);
+sunja.print_cases();
+
+
+let wasti = new noun('wasti', Feminine, strong_feminine_jstem_longvowel);
+wasti.print_cases();
+
+let mawi = new noun('mawi', Feminine, strong_feminine_jstem_longvowel);
+mawi.print_cases();
+*/
+
+
+/*
 // Weak Masculine Noun
 let atta = new noun('atta', Masculine, weak_masculine);
 atta.print_cases();
@@ -343,7 +394,9 @@ qino.print_cases();
 // Weak Feminine Noun (-ei type)
 let managei = new noun('managei', Feminine, weak_feminine_eiending);
 managei.print_cases();
+*/
 
+/*
 // Strong Masculine Noun (-i type)
 let gasts = new noun('gasts', Masculine, strong_masculine_istem);
 gasts.print_cases();
@@ -355,7 +408,9 @@ taikns.print_cases();
 // R Stem Noun (-i type)
 let broþar = new noun('broþar', Masculine, rstem);
 broþar.print_cases();
+*/
 
+/*
 // U Stem Masculine Noun
 let sunus = new noun('sunus', Masculine, strong_ustem);
 sunus.print_cases();
@@ -367,7 +422,9 @@ handus.print_cases();
 // U Stem Neuter Noun
 let faihu = new noun('faihu', Neuter, strong_neuter_ustem);
 faihu.print_cases();
+*/
 
+/*
 // Bare Masculine Noun
 let frijonds = new noun('frijonds', Masculine, masculine);
 frijonds.print_cases();
@@ -387,7 +444,10 @@ weitwoþs.print_cases();
 // Special Noun: fon
 let fon = new noun('fon', Neuter, special_fon);
 fon.print_cases();
+*/
 
+
+/*
 // Class 1 Weak Verbal Noun
 let hauseins = new noun('hauseins', Feminine, class1weak_verbal);
 hauseins.print_cases();
@@ -401,8 +461,9 @@ let libains = new noun('libains', Feminine, class3weak_verbal);
 libains.print_cases();
 */
 
+
+
+/*
 print(Gothicize('ik im gredags'));
 print(Romanize('𐌹𐌺 𐌹𐌼 𐌲𐍂𐌴𐌳𐌰𐌲𐍃'));
-
-//print("hiþar");
-//print("𐌷𐌰𐌻𐌻𐍉");
+*/
