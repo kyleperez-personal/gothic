@@ -1,8 +1,5 @@
 Things left to do with nouns:
 
-Need to put in devoicing rule
-(IE: b -> f, d -> þ, z -> s when those 3 characters are the last ones, or when followed by an 's').
-
 Put in special noun cases:
 'manna' (man)
 irregular nouns that are mostly regular (need way to override default declensions)
