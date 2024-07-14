@@ -1,9 +1,15 @@
 Things left to do with nouns:
 
-Put in special noun cases:
-'manna' (man)
-irregular nouns that are mostly regular (need way to override default declensions)
+Pronouns
 personal pronouns (including reflexivity)
 hwas / hwis / hwo (interoggative pronouns)
 
-Then move onto other grammatical stuff
+Then move onto other grammatical stuff:
+
+Adjectives:
+General adjectives (strong and weak declensions, all stem types)
+Special adjectives (sa, sama, alla, etc)
+
+Verbs:
+The copula
+All classes

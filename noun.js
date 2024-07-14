@@ -1,16 +1,7 @@
-//import * as StartScreen from './start_screen/start_screen.js';
-
-// Just override console.log for print
-// Too used to Python + friends
-function print(arg) { console.log(arg); }
-
-function isVowel(x) { 
-	return ("aeiouAEIOU".indexOf(x) != -1); 
-}
-
-function isConsanant(x) {
-	return !isVowel(x);
-}
+import * as tools from './tools.js'
+import * as Cases from './cases.js'
+import * as Numbers from './numbers.js'
+import * as Genders from './genders.js'
 
 // Data container for holding case endings for nouns.
 class nountype {
@@ -40,6 +31,8 @@ class nountype {
 }
 
 // All the different types of nouns so far.
+const no_endings = new nountype('No Endings', [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]);
+const indeclinable = new nountype('Indeclinable', [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]);
 const strong_masculine = new nountype('Strong Masculine', [['-s', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
 const strong_masculine_rending = new nountype('Strong Masculine (r ending)', [['-', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
 const strong_masculine_jstem_shortvowel = new nountype('Strong Masculine (j stem, w/ short vowel)', [['-is', '--', '-os'], ['-is', '--', '-e'], ['-a', '--', '-am'], ['-', '--', '-ans'], ['--', '--', '--']]);
@@ -62,6 +55,7 @@ const strong_neuter_ustem = new nountype('Strong Neuter (-u stem)', [['-u', '--'
 const masculine = new nountype('Masculine', [['-s', '--', '-s'], ['-is', '--', '-e'], ['-', '--', '-am'], ['-', '--', '-s'], ['--', '--', '--']]);
 const feminine = new nountype('Feminine', [['-s', '--', '-s'], ['-s', '--', '-e'], ['-', '--', '-im'], ['-', '--', '-s'], ['--', '--', '--']]);
 
+const special_manna = new nountype('Manna', [['-na', '--', '-nans'], ['-s', '--', '-ne'], ['-n', '--', '-nam'], ['-nan', '--', '-nans'], ['--', '--', '--']])
 const special_menoþs = new nountype('Special Class (Menoþs)', [['-s', '--', '-s'], ['--', '--', '--'], ['-', '--', '-um'], ['--', '--', '-s'], ['--', '--', '--']]);
 const special_weitwoþs = new nountype('Special Class (Weitwoþs)', [['-þs', '--', '-þs'], ['--', '--', '-de'], ['--', '--', '--'], ['-d', '--', '--'], ['--', '--', '--']]);
 const special_fon = new nountype('Special Class (Fon)', [['-on', '--', '--'], ['-unins', '--', '--'], ['-unin', '--', '--'], ['-on', '--', '--'], ['--', '--', '--']]);
@@ -70,51 +64,9 @@ const class1weak_verbal = new nountype('Weak Verbal Noun (Class 1)', [['-s', '--
 const special_gairnei = weak_feminine_eiending;
 const class3weak_verbal = strong_feminine_istem;
 
-// The 5 cases in Gothic
-const Nominative = 'Nominative';
-const Genitive = 'Genitive';
-const Dative = 'Dative';
-const Accusative = 'Accusative';
-const Vocative = 'Vocative';
 
-// The 3 numbers in Gothic
-const Singular = 'Singular';
-const Dual = 'Dual';
-const Plural = 'Plural';
-
-// The 3 genders in Gothic
-const Masculine = 'masculine';
-const Neuter = 'neuter';
-const Feminine = 'feminine';
-
-// Allowed consanants, vowels, and Long and short vowels
-const Consanants = ['b', 'g', 'd', 'q', 'z', 'h', 'þ', 'k', 'l', 'm', 'n', 'j', 'p', 'r', 's', 't', 'w', 'f', 'x', 'ƕ'];
-const Vowels = ['a', 'ai', 'e', 'i', 'ei', 'o', 'au', 'u', 'iu'];
-const ShortVowels = ['a', 'i', 'u'];
-const LongVowels = ['e', 'o', 'ei'];
-
-const Alphabet       = ['a', 'b', 'd', 'e', 'f', 'g', 'h', 'ƕ', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'þ', 'u', 'w', 'x', 'z'];
-const GothicAlphabet = ['𐌰', '𐌱', '𐌳', '𐌴', '𐍆', '𐌲', '𐌷', '𐍈', '𐌹', '𐌾', '𐌺', '𐌻', '𐌼', '𐌽', '𐍉', '𐍀', '𐌵', '𐍂', '𐍃', '𐍄', '𐍈', '𐌿', '𐍅', '𐍇', '𐌶'];
-
-function Gothicize(words) {
-	let gothic_words = '';
-	for (let char of words) {
-		let ind = Alphabet.indexOf(char);
-		if (ind < 0) gothic_words += char;
-		else gothic_words += GothicAlphabet[ind];
-	}
-	return gothic_words;
-}
-
-function Romanize(words) {
-	let roman_words = '';
-	for (let char of words) {
-		let ind = GothicAlphabet.indexOf(char);
-		if (ind < 0) roman_words += char;
-		else roman_words += Alphabet[ind];
-	}
-	return roman_words;
-}
+//Overriding certain endings
+const NoOverrides = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]
 
 function devoice(raw_word) {
 	// Devoicing:
@@ -157,6 +109,7 @@ function get_noun_root(noun, noun_type, revoicing) {
 
 	switch(noun_type) {
 		// Nouns whose NS is the stem
+		case indeclinable:
 		case strong_neuter:
 		case strong_masculine_rending:
 			stem = noun;
@@ -195,6 +148,7 @@ function get_noun_root(noun, noun_type, revoicing) {
 		case weak_feminine_eiending:
 		case rstem:
 		case strong_ustem:
+		case special_manna:
 		case special_weitwoþs:
 		case special_fon:
 		case special_gairnei:
@@ -205,7 +159,7 @@ function get_noun_root(noun, noun_type, revoicing) {
 			stem = noun.slice(0, -3) + 'j';
 			break;
 		default:
-			print('Unexpected noun type of "' + noun_type.name + '".');
+			tools.print('Unexpected noun type of "' + noun_type.name + '".');
 			stem = '--';
 	}
 
@@ -218,13 +172,15 @@ function get_noun_root(noun, noun_type, revoicing) {
 // Container for holding a noun
 class noun {
 
-	constructor(name, gender, noun_type, revoicing=false) {
+	constructor(name, noun_gender, noun_type, revoicing=false, overrides=NoOverrides, definition="No definition") {
 		this.name = name;
-		this.gender = gender;
+		this.gender = noun_gender;
 		this.revoicing = revoicing;
 		this.root = get_noun_root(name, noun_type, revoicing);
 		this.case_endings = noun_type;
 		this.is_long_jstem = this.#is_long_jstem();
+		this.definition = definition;
+		this.overrides = overrides;
 	}
 
 	#is_long_jstem() {
@@ -233,13 +189,13 @@ class noun {
 		// Then see if stem satisfies CvCCj patern. If so, it is a long j stem for all vowels v and constanants C
 		// To see if it is a short vowel j stem, has pattern of CvCj- where v is short for ending letters
 		let imp_char = this.root.slice(-3, -2);
-		if (isConsanant(imp_char)) return true;
+		if (tools.isConsanant(imp_char)) return true;
 		// Take advantage of the fact that we have a CvC... like pattern; complete vowel is always preceeded by a consanant
 		// In Gothic, the vowels can be represented by two characters though, so need to know this
 		else {
 			let prev_imp_char = this.root.slice(-4, -3);
 			let vowel = '';
-			if (isConsanant(prev_imp_char)) {
+			if (tools.isConsanant(prev_imp_char)) {
 				vowel = imp_char;
 			}
 			else {
@@ -248,45 +204,45 @@ class noun {
 
 			// Long Vowel values are 'e' 'o' and 'ei'
 			// short vowels are 'a', 'i', and 'u', but also includes all the others for now.
-			return LongVowels.includes(vowel);
+			return tools.LongVowels.includes(vowel);
 		}
 	}
 
 	// Given a specific case + number, decline a general noun
-	decline(noun_case, number) {
+	decline(noun_case, noun_number) {
 
 		let declination = 'Unknown Declination';
 		let ending = 'null';
 
-		if (number != Singular && number != Dual && number != Plural) {
+		if (noun_number != Numbers.Singular && noun_number != Numbers.Dual && noun_number != Numbers.Plural) {
 			declination = 'Unknown Noun Number "' + number + '"';
 		}
 
 		// Standard declination from table
-		if (noun_case == Nominative) {
-			if (number == Singular) { ending = this.case_endings.nominative_singular; }
-			//else if (number == Dual) { ending = this.case_endings.nominative_dual; }
-			else if (number == Plural) { ending = this.case_endings.nominative_plural; }
+		if (noun_case == Cases.Nominative) {
+			if (noun_number == Numbers.Singular) { ending = this.case_endings.nominative_singular; }
+			//else if (noun_number == Numbers.Dual) { ending = this.case_endings.nominative_dual; }
+			else if (noun_number == Numbers.Plural) { ending = this.case_endings.nominative_plural; }
 		}
-		else if (noun_case == Genitive) {
-			if (number == Singular) { ending = this.case_endings.genitive_singular; }
-			//else if (number == Dual) { ending = this.case_endings.genitive_dual; }
-			else if (number == Plural) { ending = this.case_endings.genitive_plural; }
+		else if (noun_case == Cases.Genitive) {
+			if (noun_number == Numbers.Singular) { ending = this.case_endings.genitive_singular; }
+			//else if (noun_number == Numbers.Dual) { ending = this.case_endings.genitive_dual; }
+			else if (noun_number == Numbers.Plural) { ending = this.case_endings.genitive_plural; }
 		}
-		else if (noun_case == Dative) {
-			if (number == Singular) { ending = this.case_endings.dative_singular; }
-			//else if (number == Dual) { ending = this.case_endings.dative_dual; }
-			else if (number == Plural) { ending = this.case_endings.dative_plural; }
+		else if (noun_case == Cases.Dative) {
+			if (noun_number == Numbers.Singular) { ending = this.case_endings.dative_singular; }
+			//else if (noun_number == Numbers.Dual) { ending = this.case_endings.dative_dual; }
+			else if (noun_number == Numbers.Plural) { ending = this.case_endings.dative_plural; }
 		}
-		else if (noun_case == Accusative) {
-			if (number == Singular) { ending = this.case_endings.accusative_singular; }
-			//else if (number == Dual) { ending = this.case_endings.accusative_dual; }
-			else if (number == Plural) { ending = this.case_endings.accusative_plural; }
+		else if (noun_case == Cases.Accusative) {
+			if (noun_number == Numbers.Singular) { ending = this.case_endings.accusative_singular; }
+			//else if (noun_number == Numbers.Dual) { ending = this.case_endings.accusative_dual; }
+			else if (noun_number == Numbers.Plural) { ending = this.case_endings.accusative_plural; }
 		}
-		else if (noun_case == Vocative) {
-			if (number == Singular) { ending = this.case_endings.vocative_singular; }
-			//else if (number == Dual) { ending = this.case_endings.vocative_dual; }
-			else if (number == Plural) { ending = this.case_endings.vocative_plural; }
+		else if (noun_case == Cases.Vocative) {
+			if (noun_number == Numbers.Singular) { ending = this.case_endings.vocative_singular; }
+			//else if (noun_number == Numbers.Dual) { ending = this.case_endings.vocative_dual; }
+			else if (noun_number == Numbers.Plural) { ending = this.case_endings.vocative_plural; }
 		}
 		else {
 			declination = 'Unknown Noun Case "' + noun_case + '"';
@@ -297,7 +253,7 @@ class noun {
 			return declination;
 		}
 		// If no declination given, show just '-'
-		else if (ending == '-') {
+		else if (tools.isNullEnding(ending)) {
 			return ending;
 		}
 		// Otherwise, need to construct some special cases related to j stem nouns
@@ -313,15 +269,28 @@ class noun {
 			}
 			// Otherwise if noun is long j stem (masculine or neuter are the ones that apply), assimilate 'jis' to eis'
 			else if (this.is_long_jstem && ending == 'is') {
-				declination = declination.slice(0,-3) + 'eis';
+				//declination = declination.slice(0,-3) + 'eis';
+				declination = this.root.slice(0, -1) + 'eis';
 			}
-			return declination;
+			// If the ending is pure 'ns' (like andins) with j ending stem, ending is 'ins'.
+			else if (this.is_long_jstem && ending == 'ns') {
+				//declination = declination.slice(0,-3) + 'ins';
+				declination = this.root.slice(0, -1) + 'ins';
+			}
+			//return declination;
 		}
 		else {
 			declination = this.root + ending;
 		}
 
+		//tools.print('Override name: ' + this.overrides[noun_case.number][noun_number.number]);
+		//tools.print('hi');
 		if (this.revoicing) declination = devoice(declination);
+		if (!tools.isNullEnding(this.overrides[noun_case.number][noun_number.number])) {
+			//print('In here');
+			return this.overrides[noun_case.number][noun_number.number];
+		}
+		//tools.print('Got here')
 		return declination;
 
 	}
@@ -329,42 +298,46 @@ class noun {
 	// Print all of the relevant cases for a given noun
 	print_cases() {
 
-		let ns_decline = this.decline(Nominative, Singular);
-		//let nd_decline = this.decline(Nominative, Dual);
-		let np_decline = this.decline(Nominative, Plural);
-		let gs_decline = this.decline(Genitive, Singular);
-		//let gd_decline = this.decline(Genitive, Dual);
-		let gp_decline = this.decline(Genitive, Plural);
-		let ds_decline = this.decline(Dative, Singular);
-		//let dd_decline = this.decline(Dative, Dual);
-		let dp_decline = this.decline(Dative, Plural);
-		let as_decline = this.decline(Accusative, Singular);
-		//let ad_decline = this.decline(Accusative, Dual);
-		let ap_decline = this.decline(Accusative, Plural);
-		let vs_decline = this.decline(Vocative, Singular);
-		//let vd_decline = this.decline(Vocative, Dual);
-		let vp_decline = this.decline(Vocative, Plural);
+		let ns_decline = this.decline(Cases.Nominative, Numbers.Singular);
+		//let nd_decline = this.decline(Cases.Nominative, Numbers.Dual);
+		let np_decline = this.decline(Cases.Nominative, Numbers.Plural);
+		let gs_decline = this.decline(Cases.Genitive, Numbers.Singular);
+		//let gd_decline = this.decline(Cases.Genitive, Numbers.Dual);
+		let gp_decline = this.decline(Cases.Genitive, Numbers.Plural);
+		let ds_decline = this.decline(Cases.Dative, Numbers.Singular);
+		//let dd_decline = this.decline(Cases.Dative, Numbers.Dual);
+		let dp_decline = this.decline(Cases.Dative, Numbers.Plural);
+		let as_decline = this.decline(Cases.Accusative, Numbers.Singular);
+		//let ad_decline = this.decline(Cases.Accusative, Numbers.Dual);
+		let ap_decline = this.decline(Cases.Accusative, Numbers.Plural);
+		let vs_decline = this.decline(Cases.Vocative, Numbers.Singular);
+		//let vd_decline = this.decline(Cases.Vocative, Numbers.Dual);
+		let vp_decline = this.decline(Cases.Vocative, Numbers.Plural);
 
-		let max_singular_col_len = Math.max(Singular.length, ns_decline.length, gs_decline.length, ds_decline.length, as_decline.length, vs_decline.length);
-		let max_plural_col_len = Math.max(Plural.length, np_decline.length, gp_decline.length, dp_decline.length, ap_decline.length, vp_decline.length);
+		let max_singular_col_len = Math.max(Numbers.Singular.name.length, ns_decline.length, gs_decline.length, ds_decline.length, as_decline.length, vs_decline.length);
+		let max_plural_col_len = Math.max(Numbers.Plural.name.length, np_decline.length, gp_decline.length, dp_decline.length, ap_decline.length, vp_decline.length);
 
 		max_singular_col_len++;
 		max_plural_col_len++;
 
-		let header = 'Case ' + Singular + ' '.repeat(max_singular_col_len-Singular.length) + Plural;
+		let header = 'Case ' + Numbers.Singular.name + ' '.repeat(max_singular_col_len-Numbers.Singular.name.length) + Numbers.Plural.name;
 		let nominative_line = 'Nom: ' + ns_decline + ' '.repeat(max_singular_col_len-ns_decline.length)  + np_decline;
 		let genitive_line = 'Gen: ' + gs_decline + ' '.repeat(max_singular_col_len-gs_decline.length) + gp_decline;
 		let dative_line = 'Dat: ' + ds_decline + ' '.repeat(max_singular_col_len-ds_decline.length) + dp_decline;
 		let accusative_line = 'Acc: ' + as_decline + ' '.repeat(max_singular_col_len-as_decline.length) + ap_decline;
 		let vocative_line = 'Voc: ' + vs_decline + ' '.repeat(max_singular_col_len-vs_decline.length) + vp_decline;
-		print(header);
-		print(nominative_line);
-		print(genitive_line);
-		print(dative_line);
-		print(accusative_line);
-		print(vocative_line);
+		tools.print(header);
+		tools.print(nominative_line);
+		tools.print(genitive_line);
+		tools.print(dative_line);
+		tools.print(accusative_line);
+		tools.print(vocative_line);
 
 
+	}
+
+	print_definition() {
+		tools.print('Definition of "' + this.name + '": ' + this.definition + '.');
 	}
 
 }
@@ -374,156 +347,168 @@ class noun {
 /*
 // Strong Masculine Nouns
 // Default type
-let dags = new noun('dags', Masculine, strong_masculine);
+let dags = new noun('dags', Genders.Masculine, strong_masculine, false, NoOverrides, 'day');
 dags.print_cases();
+dags.print_definition();
 
 // Devoiced stem
-let hlaifs = new noun('hlaifs', Masculine, strong_masculine, true);
+let hlaifs = new noun('hlaifs', Genders.Masculine, strong_masculine, true, NoOverrides, 'bread');
 hlaifs.print_cases();
 
 // Strong Masculine Noun that ends in 'r'
-let wair = new noun('wair', Masculine, strong_masculine_rending);
+let wair = new noun('wair', Genders.Masculine, strong_masculine_rending, false, NoOverrides, 'person, man');
 wair.print_cases();
 
 // Strong Masculine Noun with j ending stem with short vowels
 // Short vowels: a i u
-let harjis = new noun('harjis', Masculine, strong_masculine_jstem_shortvowel);
+let harjis = new noun('harjis', Genders.Masculine, strong_masculine_jstem_shortvowel, false, NoOverrides, 'army');
 harjis.print_cases();
 
 // Long vowels: e o ei
-let siponeis = new noun('siponeis', Masculine, strong_masculine_jstem_longvowel);
+let siponeis = new noun('siponeis', Genders.Masculine, strong_masculine_jstem_longvowel, false, NoOverrides, 'disciple');
 siponeis.print_cases();
-*/
 
+// Strong masculine noun with long j stem and irregular accusative ending
+const andeis_overrides = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', 'andins'], ['-', '-', '-']]
+let andeis = new noun('andeis', Genders.Masculine, strong_masculine_jstem_longvowel, false, andeis_overrides, 'end');
+andeis.print_cases();
+*/
 
 
 
 
 /*
 // Strong Neuter Noun
-let waurd = new noun('waurd', Neuter, strong_neuter);
+let waurd = new noun('waurd', Genders.Neuter, strong_neuter, false, NoOverrides, 'word');
 waurd.print_cases();
 
 // Strong Neuter Noun with devoiced stem
-let witoþ = new noun('witoþ', Neuter, strong_neuter, true);
+let witoþ = new noun('witoþ', Genders.Neuter, strong_neuter, true, NoOverrides, 'law');
 witoþ.print_cases();
 
 // Alternate devoiced stem
-let dius = new noun('dius', Neuter, strong_neuter, true);
+let dius = new noun('dius', Genders.Neuter, strong_neuter, true, NoOverrides, 'wild animal');
 dius.print_cases();
 
 // Short j stem
-let fairguni = new noun('fairguni', Neuter, strong_neuter_jstem_shortvowel);
+let fairguni = new noun('fairguni', Genders.Neuter, strong_neuter_jstem_shortvowel, false, NoOverrides, 'mountain');
 fairguni.print_cases();
 
 // Long j stem
-let gawi = new noun('gawi', Neuter, strong_neuter_jstem_longvowel);
+let gawi = new noun('gawi', Genders.Neuter, strong_neuter_jstem_longvowel, false, NoOverrides, 'district, region');
 gawi.print_cases();
 */
 
 
 /*
 // Strong Feminine Noun
-let giba = new noun('giba', Feminine, strong_feminine);
+let giba = new noun('giba', Genders.Feminine, strong_feminine, false, NoOverrides, 'gift');
 giba.print_cases();
 
 // Short j stem
-let sunja = new noun('sunja', Feminine, strong_feminine_jstem_shortvowel);
+let sunja = new noun('sunja', Genders.Feminine, strong_feminine_jstem_shortvowel, false, NoOverrides, 'truth');
 sunja.print_cases();
 
 // Long j stem
-let wasti = new noun('wasti', Feminine, strong_feminine_jstem_longvowel);
+let wasti = new noun('wasti', Genders.Feminine, strong_feminine_jstem_longvowel, false, NoOverrides, 'clothes');
 wasti.print_cases();
 
 // Long j stem with 'auj' --> 'awi' assimilation
-let mawi = new noun('mawi', Feminine, strong_feminine_jstem_longvowel);
+let mawi = new noun('mawi', Genders.Feminine, strong_feminine_jstem_longvowel, false, NoOverrides, 'young woman, girl');
 mawi.print_cases();
 */
 
 
 /*
 // Weak Masculine Noun
-let atta = new noun('atta', Masculine, weak_masculine);
+let atta = new noun('atta', Genders.Masculine, weak_masculine, false, NoOverrides, 'father');
 atta.print_cases();
 
 // Weak Neuter Noun
-let hairto = new noun('hairto', Neuter, weak_neuter);
+let hairto = new noun('hairto', Genders.Neuter, weak_neuter, false, NoOverrides, 'heart');
 hairto.print_cases();
 
 // Weak Feminine Noun (-o type)
-let qino = new noun('qino', Feminine, weak_feminine_oending);
+let qino = new noun('qino', Genders.Feminine, weak_feminine_oending, false, NoOverrides, 'wife, woman');
 qino.print_cases();
 
 // Weak Feminine Noun (-ei type)
-let managei = new noun('managei', Feminine, weak_feminine_eiending);
+let managei = new noun('managei', Genders.Feminine, weak_feminine_eiending, false, NoOverrides, 'crowd');
 managei.print_cases();
 */
 
 /*
 // Strong Masculine Noun (-i type)
-let gasts = new noun('gasts', Masculine, strong_masculine_istem);
+let gasts = new noun('gasts', Genders.Masculine, strong_masculine_istem, false, NoOverrides, 'guest');
 gasts.print_cases();
 
 // Strong Feminine Noun (-i type)
-let taikns = new noun('taikns', Feminine, strong_feminine_istem);
+let taikns = new noun('taikns', Genders.Feminine, strong_feminine_istem, false, NoOverrides, 'sign, omen');
 taikns.print_cases();
 
 // R Stem Noun (-i type)
-let broþar = new noun('broþar', Masculine, rstem);
+let broþar = new noun('broþar', Genders.Masculine, rstem, false, NoOverrides, 'brother');
 broþar.print_cases();
 */
 
 /*
 // U Stem Masculine Noun
-let sunus = new noun('sunus', Masculine, strong_ustem);
+let sunus = new noun('sunus', Genders.Masculine, strong_ustem, false, NoOverrides, 'son');
 sunus.print_cases();
 
 // U Stem Feminine Noun
-let handus = new noun('handus', Feminine, strong_ustem);
+let handus = new noun('handus', Genders.Feminine, strong_ustem, false, NoOverrides, 'hand');
 handus.print_cases();
 
 // U Stem Neuter Noun
-let faihu = new noun('faihu', Neuter, strong_neuter_ustem);
+let faihu = new noun('faihu', Genders.Neuter, strong_neuter_ustem, false, NoOverrides, 'property, wealth');
 faihu.print_cases();
 */
 
 /*
 // Bare Masculine Noun
-let frijonds = new noun('frijonds', Masculine, masculine);
+let frijonds = new noun('frijonds', Genders.Masculine, masculine, false, NoOverrides, 'friend');
 frijonds.print_cases();
 
 // Bare Feminine Noun
-let baurgs = new noun('baurgs', Feminine, feminine);
+let baurgs = new noun('baurgs', Genders.Feminine, feminine, false, NoOverrides, 'city');
 baurgs.print_cases();
 
 // Special Noun: menoþs
-let menoþs = new noun('menoþs', Masculine, special_menoþs);
+let menoþs = new noun('menoþs', Genders.Masculine, special_menoþs, false, NoOverrides, 'month');
 menoþs.print_cases();
 
 // Special Noun: weitwoþs
-let weitwoþs = new noun('weitwoþs', Masculine, special_weitwoþs);
+let weitwoþs = new noun('weitwoþs', Genders.Masculine, special_weitwoþs, false, NoOverrides, 'witness');
 weitwoþs.print_cases();
 
 // Special Noun: fon
-let fon = new noun('fon', Neuter, special_fon);
+let fon = new noun('fon', Genders.Neuter, special_fon, false, NoOverrides, 'fire');
 fon.print_cases();
 */
 
 /*
 // Class 1 Weak Verbal Noun
-let hauseins = new noun('hauseins', Feminine, class1weak_verbal);
+let hauseins = new noun('hauseins', Genders.Feminine, class1weak_verbal, false, NoOverrides, 'hearing');
 hauseins.print_cases();
 
 // Special Verbal Noun: gairnei
-let gairnei = new noun('gairnei', Feminine, special_gairnei);
+let gairnei = new noun('gairnei', Genders.Feminine, special_gairnei, false, NoOverrides, 'desire');
 gairnei.print_cases();
 
 // Class 3 Weak Verbal Noun:
-let libains = new noun('libains', Feminine, class3weak_verbal);
+let libains = new noun('libains', Genders.Feminine, class3weak_verbal, false, NoOverrides, 'life');
 libains.print_cases();
 */
 
+// Special Noun: manna
 /*
-print(Gothicize('ik im gredags'));
-print(Romanize('𐌹𐌺 𐌹𐌼 𐌲𐍂𐌴𐌳𐌰𐌲𐍃'));
+let manna = new noun('manna', Genders.Masculine, special_manna, false, NoOverrides, 'person, man');
+manna.print_cases();
+*/
+
+
+/*
+tools.print(tools.Gothicize('ik im gredags'));
+tools.print(tools.Romanize('𐌹𐌺 𐌹𐌼 𐌲𐍂𐌴𐌳𐌰𐌲𐍃'));
 */
