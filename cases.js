@@ -11,3 +11,5 @@ export const Genitive = new Case('Genitive', 1);
 export const Dative = new Case('Dative', 2);
 export const Accusative = new Case('Accusative', 3);
 export const Vocative = new Case('Vocative', 4);
+
+export const CaseList = [Nominative, Genitive, Dative, Accusative, Vocative];

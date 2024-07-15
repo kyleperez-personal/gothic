@@ -6,6 +6,8 @@ export class Gender {
 }
 
 // The 3 genders in Gothic
-const Masculine = new Gender('masculine', 0);
-const Neuter = new Gender('neuter', 1);
-const Feminine = new Gender('feminine', 2);
+export const Masculine = new Gender('Masculine', 0);
+export const Neuter = new Gender('Neuter', 1);
+export const Feminine = new Gender('Feminine', 2);
+
+export const GenderList = [Masculine, Neuter, Feminine];

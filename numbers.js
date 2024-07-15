@@ -9,3 +9,5 @@ export class Number {
 export const Singular = new Number('Singular', 0);
 export const Dual = new Number('Dual', 1);
 export const Plural = new Number('Plural', 2);
+
+export const NumberList = [Singular, Dual, Plural];
