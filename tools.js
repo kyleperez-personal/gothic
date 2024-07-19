@@ -44,3 +44,38 @@ export function Romanize(words) {
 export function isNullEnding(ending) {
 	return ending == '-';
 }
+
+
+export function devoice(raw_word) {
+	// Devoicing:
+	// A word ending in 'z' is devoiced to 's'
+	// A word ending in 'd' is devoiced to 'þ'
+	// A word ending in 'b' is devoiced to 'f'
+	let lastchar = raw_word.slice(-1);
+	
+	if (lastchar == 'z') return raw_word.slice(0, -1) + 's';
+	if (lastchar == 'd') return raw_word.slice(0, -1) + 'þ';
+	if (lastchar == 'b') return raw_word.slice(0, -1) + 'f';
+
+	let scnd_lastchar = raw_word.slice(-2, -1);
+	// If second to last character is 'd' and last is 's', devoice 'd' to 'þ'
+	// Same idea with 'b'; devoice to 'f'
+	if (scnd_lastchar == 'd' && lastchar == 's') return raw_word.slice(0, -2) + 'þs';
+	if (scnd_lastchar == 'b' && lastchar == 's') return raw_word.slice(0, -2) + 'fs';
+
+	return raw_word;
+}
+
+export function revoice(raw_stem) {
+	// Revoicing:
+	// Stem ends in 's' revoice to 'z'
+	// Stem ends in 'þ' revoice to 'd'
+	// Stem ends in 'f' revoice to 'b'
+	let lastchar = raw_stem.slice(-1);
+	if (lastchar == 's') return raw_stem.slice(0, -1) + 'z';
+	if (lastchar == 'þ') return raw_stem.slice(0, -1) + 'd';
+	if (lastchar == 'f') return raw_stem.slice(0, -1) + 'b';
+
+	return raw_stem;
+
+}
