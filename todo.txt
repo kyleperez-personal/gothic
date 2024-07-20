@@ -4,10 +4,10 @@ How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with.
 
 Adjectives:
-General adjectives (strong and weak declensions, all stem types)
-Devoicing/reduction of endings
-Various adjective stem types
 Special adjectives (sa, sama, alla, etc)
+Adjective / Adverb formation?
+Or noun formation from adjectives?
+Not sure about these yet.
 
 Verbs:
 The copula
