@@ -3,12 +3,10 @@ Things left to do with nouns:
 How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with.
 
-Adjectives:
-Special adjectives (sa, sama, alla, etc)
-Adjective / Adverb formation?
-Or noun formation from adjectives?
-Not sure about these yet.
-
 Verbs:
 The copula
 All classes
+
+Adjective / Adverb formation
+Or noun formation from adjectives
+Will get to later.

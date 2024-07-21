@@ -237,12 +237,14 @@ class noun {
 		max_singular_col_len++;
 		max_plural_col_len++;
 
+		let top_header = 'Inflections of ' + this.name;
 		let header = 'Case ' + Numbers.Singular.name + ' '.repeat(max_singular_col_len-Numbers.Singular.name.length) + Numbers.Plural.name;
 		let nominative_line = 'Nom: ' + ns_decline + ' '.repeat(max_singular_col_len-ns_decline.length)  + np_decline;
 		let genitive_line = 'Gen: ' + gs_decline + ' '.repeat(max_singular_col_len-gs_decline.length) + gp_decline;
 		let dative_line = 'Dat: ' + ds_decline + ' '.repeat(max_singular_col_len-ds_decline.length) + dp_decline;
 		let accusative_line = 'Acc: ' + as_decline + ' '.repeat(max_singular_col_len-as_decline.length) + ap_decline;
 		let vocative_line = 'Voc: ' + vs_decline + ' '.repeat(max_singular_col_len-vs_decline.length) + vp_decline;
+		tools.print(top_header);
 		tools.print(header);
 		tools.print(nominative_line);
 		tools.print(genitive_line);
@@ -340,7 +342,7 @@ class pronoun {
 			max_singular_col_len++;
 			max_plural_col_len++;
 
-			let gender_header = gender.name + ' Inflections';
+			let gender_header = gender.name + ' Inflections of ' + this.name;
 			let header = 'Case ' + Numbers.Singular.name + ' '.repeat(max_singular_col_len-Numbers.Singular.name.length) + Numbers.Dual.name + ' '.repeat(max_dual_col_len-Numbers.Dual.name.length+1) + Numbers.Plural.name + ' '.repeat(max_plural_col_len-Numbers.Plural.name.length) + 'Reflexive';
 			let nominative_line = 'Nom: ' + ns_decline + ' '.repeat(max_singular_col_len-ns_decline.length) + nd_decline + ' '.repeat(max_dual_col_len-nd_decline.length+1) + np_decline + ' '.repeat(max_plural_col_len-np_decline.length) + reflex_n;
 			let genitive_line = 'Gen: ' + gs_decline + ' '.repeat(max_singular_col_len-gs_decline.length) + gd_decline + ' '.repeat(max_dual_col_len-gd_decline.length+1) + gp_decline + ' '.repeat(max_plural_col_len-gp_decline.length) + reflex_g;
@@ -523,8 +525,8 @@ let libains = new noun('libains', Genders.Feminine, class3weak_verbal, false, No
 libains.print_cases();
 */
 
-// Special Noun: manna
 /*
+// Special Noun: manna
 let manna = new noun('manna', Genders.Masculine, special_manna, false, NoOverrides, 'person, man');
 manna.print_cases();
 */
