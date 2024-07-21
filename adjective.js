@@ -1,8 +1,8 @@
 import * as tools from './tools.js'
-import * as Cases from './cases.js'
-import * as Numbers from './numbers.js'
-import * as Genders from './genders.js'
-import * as Declensions from './declensions.js'
+import * as Cases from './language_properties/cases.js'
+import * as Numbers from './language_properties/numbers.js'
+import * as Genders from './language_properties/genders.js'
+import * as Declensions from './language_properties/declensions.js'
 
 // Data container for holding case endings for nouns.
 class adjectivetype {

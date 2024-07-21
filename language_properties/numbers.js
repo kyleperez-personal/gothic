@@ -5,7 +5,8 @@ export class Number {
 	}
 }
 
-// The 5 cases in Gothic
+// The 3 Numbers in Gothic
+// Dual is only really used for personal pronouns and verbs
 export const Singular = new Number('Singular', 0);
 export const Dual = new Number('Dual', 1);
 export const Plural = new Number('Plural', 2);

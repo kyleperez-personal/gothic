@@ -4,6 +4,8 @@ How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with.
 
 Verbs:
+Done with 2 types of Weak Verbs Class 1
+Implementation probably isn't great in general, but is good enough for now.
 The copula
 All classes
 

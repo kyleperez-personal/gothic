@@ -1,7 +1,7 @@
 import * as tools from './tools.js'
-import * as Cases from './cases.js'
-import * as Numbers from './numbers.js'
-import * as Genders from './genders.js'
+import * as Cases from './language_properties/cases.js'
+import * as Numbers from './language_properties/numbers.js'
+import * as Genders from './language_properties/genders.js'
 
 // Data container for holding case endings for nouns.
 class nountype {
@@ -580,13 +580,14 @@ ni_ƕashun.print_cases();
 const no_man_pronoun_masculine_inflections = [['ni mannahun', '-', '-'], ['ni manshun', '-', '-'], ['ni mannhun', '-', '-'], ['ni mannanhun', '-', '-'], ['-', '-', '-']];
 let ni_mannahun = new pronoun('ni mannahun', [no_man_pronoun_masculine_inflections, [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], ['-', '-', '-'], 'No one (literally, no man)');
 ni_mannahun.print_cases();
+*/
 
 const no_one_pronoun_masculine_inflections = [['ni ainshun', '-', '-'], ['ni ainishun', '-', '-'], ['ni ainummehun', '-', '-'], ['ni ainohun', '-', '-'], ['-', '-', '-']];
 const no_one_pronoun_neuter_inflections = [['ni ainhun', '-', '-'], ['ni ainishun', '-', '-'], ['ni ainummehun', '-', '-'], ['ni ainhun', '-', '-'], ['-', '-', '-']];
 const no_one_pronoun_feminine_inflections = [['ni ainohun', '-', '-'], ['ni ainaizoshun', '-', '-'], ['ni ainaihun', '-', '-'], ['ni ainohun', '-', '-'], ['-', '-', '-']];
 let ni_ainshun = new pronoun('ni ainshun', [no_one_pronoun_masculine_inflections, no_one_pronoun_neuter_inflections, no_one_pronoun_feminine_inflections], ['-', '-', '-'], 'No one, nothing (neuter)');
 ni_ainshun.print_cases();
-*/
+/**/
 
 
 
