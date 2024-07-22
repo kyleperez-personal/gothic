@@ -5,7 +5,7 @@ import * as Genders from './language_properties/genders.js'
 import * as Declensions from './language_properties/declensions.js'
 
 // Data container for holding case endings for nouns.
-class adjectivetype {
+export class adjectivetype {
 	constructor(name, endings) {
 		this.name = name.substring(0, -1);
 		this.endings = endings;
@@ -14,62 +14,64 @@ class adjectivetype {
 
 
 // All the different types of adjectives
-const no_endings = new adjectivetype('No Endings', [[[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]]]);
-const indeclinable = new adjectivetype('Indeclinable', [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]]);
+export const no_endings = new adjectivetype('No Endings', [[[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]]]);
+export const indeclinable = new adjectivetype('Indeclinable', [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]]);
 
-const strong_masculine_endings = [['-s', '--', '-ai'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-ana', '--', '-ans'], ['--', '--', '--']];
-const weak_masculine_endings = [['-a', '--', '-ans'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-an', '--', '-ans'], ['--', '--', '--']];
-const strong_neuter_endings = [['-', '--', '-a'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-', '--', '-a'], ['--', '--', '--']];
-const weak_neuter_endings = [['-o', '--', '-ona'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-o', '--', '-ona'], ['--', '--', '--']];
-const strong_feminine_endings = [['-a', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
-const weak_feminine_endings = [['-o', '--', '-ons'], ['-ons', '--', '-ono'], ['-on', '--', '-om'], ['-on', '--', '-ons'], ['--', '--', '--']];
-const weak_feminine_ei_endings = [['-ei', '--', '-eins'], ['-eins', '--', '-eino'], ['-ein', '--', '-eim'], ['-ein', '--', '-eins'], ['--', '--', '--']];
+export const strong_masculine_endings = [['-s', '--', '-ai'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-ana', '--', '-ans'], ['--', '--', '--']];
+export const weak_masculine_endings = [['-a', '--', '-ans'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-an', '--', '-ans'], ['--', '--', '--']];
+export const strong_neuter_endings = [['-', '--', '-a'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-', '--', '-a'], ['--', '--', '--']];
+export const weak_neuter_endings = [['-o', '--', '-ona'], ['-ins', '--', '-ane'], ['-in', '--', '-am'], ['-o', '--', '-ona'], ['--', '--', '--']];
+export const strong_feminine_endings = [['-a', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
+export const weak_feminine_endings = [['-o', '--', '-ons'], ['-ons', '--', '-ono'], ['-on', '--', '-om'], ['-on', '--', '-ons'], ['--', '--', '--']];
+export const weak_feminine_ei_endings = [['-ei', '--', '-eins'], ['-eins', '--', '-eino'], ['-ein', '--', '-eim'], ['-ein', '--', '-eins'], ['--', '--', '--']];
 
-const standard = new adjectivetype('Standard', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_endings]]);
-const standard_eialt = new adjectivetype('Standard', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_ei_endings]]);
+export const standard = new adjectivetype('Standard', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_endings]]);
+export const standard_eialt = new adjectivetype('Standard', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_ei_endings]]);
 
-const strong_masculine_shortj_endings = [['-is', '--', '-ai'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-ana', '--', '-ans'], ['--', '--', '--']];
-const standard_short_jending = new adjectivetype('Standard (j ending, short vowel)', [[strong_masculine_shortj_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_endings]]);
+export const strong_masculine_shortj_endings = [['-is', '--', '-ai'], ['-is', '--', '-aize'], ['-amma', '--', '-aim'], ['-ana', '--', '-ans'], ['--', '--', '--']];
+export const standard_short_jending = new adjectivetype('Standard (j ending, short vowel)', [[strong_masculine_shortj_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_endings, weak_feminine_endings]]);
 
-const strong_feminine_longj_endings = [['-', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
-const standard_long_jending = new adjectivetype('Standard (j ending, long vowel)', [[strong_masculine_shortj_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_longj_endings, weak_feminine_endings]]);
+export const strong_feminine_longj_endings = [['-', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
+export const standard_long_jending = new adjectivetype('Standard (j ending, long vowel)', [[strong_masculine_shortj_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_longj_endings, weak_feminine_endings]]);
 
-const strong_feminine_istem_endings = [['-s', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
-const istem = new adjectivetype('i-stem', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_istem_endings, weak_feminine_endings]]);
+export const strong_feminine_istem_endings = [['-s', '--', '-os'], ['-aizos', '--', '-aizo'], ['-ai', '--', '-aim'], ['-a', '--', '-os'], ['--', '--', '--']];
+export const istem = new adjectivetype('i-stem', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_istem_endings, weak_feminine_endings]]);
 
 // Wiktionary claims that singular genitive endings for this type are '-us' as in hardaus, with '-uus' --> 'aus'
 // But this isn't an attested form. Lambdin claims it's just like wilþi.
 // Lambdin form is simpler, so just use that!
-const ustem = new adjectivetype('i-stem', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_istem_endings, weak_feminine_endings]]);
+export const ustem = new adjectivetype('i-stem', [[strong_masculine_endings, weak_masculine_endings], [strong_neuter_endings, weak_neuter_endings], [strong_feminine_istem_endings, weak_feminine_endings]]);
 
-const ain_masculine = [['-s', '--', '--'], ['-is', '--', '--'], ['-amma', '--', '--'], ['-ana', '--', '--'], ['--', '--', '--']];
-const ain_neuter = [['-', '--', '--'], ['-is', '--', '--'], ['-amma', '--', '--'], ['-', '--', '--'], ['--', '--', '--']];
-const ain_feminine = [['-a', '--', '--'], ['-aizos', '--', '--'], ['-ai', '--', '--'], ['-a', '--', '--'], ['--', '--', '--']];
-const nodata = [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']];
-const ain = new adjectivetype('ain', [[ain_masculine, nodata], [ain_neuter, nodata], [ain_feminine, nodata]]);
+export const ain_masculine = [['-s', '--', '--'], ['-is', '--', '--'], ['-amma', '--', '--'], ['-ana', '--', '--'], ['--', '--', '--']];
+export const ain_neuter = [['-', '--', '--'], ['-is', '--', '--'], ['-amma', '--', '--'], ['-', '--', '--'], ['--', '--', '--']];
+export const ain_feminine = [['-a', '--', '--'], ['-aizos', '--', '--'], ['-ai', '--', '--'], ['-a', '--', '--'], ['--', '--', '--']];
+export const nodata = [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']];
+export const ain = new adjectivetype('ain', [[ain_masculine, nodata], [ain_neuter, nodata], [ain_feminine, nodata]]);
 
-const tw_masculine = [['--', '-ai', '-ai'], ['--', '-addje', '-addje'], ['--', '-aim', '-aim'], ['--', '-ans', '-ans'], ['--', '--', '--']];
-const tw_neuter = [['--', '-a', '-a'], ['--', '-addje', '-addje'], ['--', '-aim', '-aim'], ['--', '-a', '-a'], ['--', '--', '--']];
-const tw_feminine = [['--', '-os', '-os'], ['--', '--', '--'], ['--', '-aim', '-aim'], ['--', '-os', '-os'], ['--', '--', '--']];
-const tw = new adjectivetype('tw', [[tw_masculine, nodata], [tw_neuter, nodata], [tw_feminine, nodata]]);
+export const tw_masculine = [['--', '-ai', '-ai'], ['--', '-addje', '-addje'], ['--', '-aim', '-aim'], ['--', '-ans', '-ans'], ['--', '--', '--']];
+export const tw_neuter = [['--', '-a', '-a'], ['--', '-addje', '-addje'], ['--', '-aim', '-aim'], ['--', '-a', '-a'], ['--', '--', '--']];
+export const tw_feminine = [['--', '-os', '-os'], ['--', '--', '--'], ['--', '-aim', '-aim'], ['--', '-os', '-os'], ['--', '--', '--']];
+export const tw = new adjectivetype('tw', [[tw_masculine, nodata], [tw_neuter, nodata], [tw_feminine, nodata]]);
 
-const þr_masculine = [['--', '--', '-eis'], ['--', '--', '-ije'], ['--', '--', '-im'], ['--', '--', '-ins'], ['--', '--', '--']];
-const þr_neuter = [['--', '--', '-ija'], ['--', '--', '-ije'], ['--', '--', '-im'], ['--', '--', '-ija'], ['--', '--', '--']];
-const þr_feminine = [['--', '--', '-eis'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '-ins'], ['--', '--', '--']];
-const þr = new adjectivetype('þr', [[þr_masculine, nodata], [þr_neuter, nodata], [þr_feminine, nodata]]);
+export const þr_masculine = [['--', '--', '-eis'], ['--', '--', '-ije'], ['--', '--', '-im'], ['--', '--', '-ins'], ['--', '--', '--']];
+export const þr_neuter = [['--', '--', '-ija'], ['--', '--', '-ije'], ['--', '--', '-im'], ['--', '--', '-ija'], ['--', '--', '--']];
+export const þr_feminine = [['--', '--', '-eis'], ['--', '--', '--'], ['--', '--', '--'], ['--', '--', '-ins'], ['--', '--', '--']];
+export const þr = new adjectivetype('þr', [[þr_masculine, nodata], [þr_neuter, nodata], [þr_feminine, nodata]]);
+
+export const active_participle_adjective = standard_eialt;
 
 // Getting the root of a noun
-function get_adjective_root(adjective_name, adjective_type) {
+export function get_adjective_root(adjective_name, adjective_type) {
 	let stem = adjective_name.slice(0, -1);
 	return stem;
 }
 
 
 //Overriding certain endings
-const NoOverrides = [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]];
+export const NoOverrides = [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]];
 
 
-class adjective {
+export class adjective {
 
 	constructor(name, adjective_type, overrides=NoOverrides, strong_only=false, weak_only=false, definition="No definition") {
 		this.name = name;
@@ -249,7 +251,7 @@ class adjective {
 
 
 
-class demonstrative {
+export class demonstrative {
 
 	constructor(name, inflections, definition="No definition") {
 		this.name = name;
