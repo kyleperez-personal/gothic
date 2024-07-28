@@ -4,7 +4,7 @@ How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with.
 
 Verbs:
-Then put in strong Verbs (still working on it)
+Put in Class 7 Strong Verbs (2 types which don't have a clean classification)
 Need to consider cases where present conjugations use a different infinitive than preterite
 Then present-preterite ones
 The copula

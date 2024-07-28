@@ -87,6 +87,7 @@ export function devoice(raw_word) {
 
 	if (scnd_lastchar == 't' && lastchar == 't') return raw_word.slice(0, -2) + 's' + lastchar;
 	if (scnd_lastchar == 'þ' && lastchar == 't') return raw_word.slice(0, -2) + 's' + lastchar;
+	if (scnd_lastchar == 'd' && lastchar == 't') return raw_word.slice(0, -2) + 's' + lastchar;
 	if (scnd_lastchar == 'b' && lastchar == 't') return raw_word.slice(0, -2) + 'f' + lastchar;
 
 	return raw_word;
@@ -108,7 +109,7 @@ export function revoice(raw_stem) {
 
 export function lower_vowel(vowel, consonant) {
 	let lowered_vowel = vowel;
-	if (vowel == 'u' && consonant == 'r') {
+	if (vowel == 'u' && (consonant == 'r' || consonant == 'h')) {
 		lowered_vowel = 'au';
 	}
 	else if (vowel == 'i' && (consonant == 'r' || consonant == 'h' || consonant == 'ƕ')) {
