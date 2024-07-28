@@ -4,11 +4,11 @@ How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with.
 
 Verbs:
-Need to put in class 4 weak Verbs
-Then put in strong Verbs (still working on class 4)
+Then put in strong Verbs (still working on it)
+Need to consider cases where present conjugations use a different infinitive than preterite
 Then present-preterite ones
 The copula
-Other irregular verbs
+Other irregular verbs (itan, etc)
 Putting in perfective forms
 
 Adjective / Adverb formation

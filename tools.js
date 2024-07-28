@@ -22,26 +22,14 @@ export function num_consonants_at_end(str) {
 	return consonant_str_ending_len;
 }
 
-export function replace_ending_vowel(str, base_vowel, ablaut_vowel) {
-	//print('arg: ' + str);
-	//print('base vowel: ' + base_vowel);
-	//print('ablaut vowel: ' + ablaut_vowel);
-	let novowel_str = str.slice(0, -1*base_vowel.length);
-	//let removed_vowel = str.slice(-1*base_vowel.length);
-	//print('removed vowel: ' + removed_vowel);
-	let ablauted_str = novowel_str + ablaut_vowel;
-	return ablauted_str;
-	
-	
-	
-	/*if (ablauted_str.slice(-1*base_vowel.length) == base_vowel) {
-		let retrimmed_str = novowel_str.slice(0, -1*base_vowel.length);
-		print('Going recursive');
-		return replace_ending_vowel(retrimmed_str, base_vowel, ablaut_vowel);
+export function num_vowels_at_end(str) {
+	let rev_str = reverse(str);
+	let vowel_str_ending_len = 0;
+	for (let char of rev_str) {
+		if (isVowel(char)) vowel_str_ending_len++;
+		else break;
 	}
-	else {
-		return ablauted_str;
-	}*/
+	return vowel_str_ending_len;
 }
 
 // Allowed consanants, vowels, and Long and short vowels
@@ -86,16 +74,20 @@ export function devoice(raw_word) {
 	// A word ending in 'd' is devoiced to 'þ'
 	// A word ending in 'b' is devoiced to 'f'
 	let lastchar = raw_word.slice(-1);
-	
-	if (lastchar == 'z') return raw_word.slice(0, -1) + 's';
-	if (lastchar == 'd') return raw_word.slice(0, -1) + 'þ';
-	if (lastchar == 'b') return raw_word.slice(0, -1) + 'f';
-
 	let scnd_lastchar = raw_word.slice(-2, -1);
+	if (isVowel(scnd_lastchar) && lastchar == 'z') return raw_word.slice(0, -1) + 's';
+	if (isVowel(scnd_lastchar) && lastchar == 'b') return raw_word.slice(0, -1) + 'f';
+	if (isVowel(scnd_lastchar) && lastchar == 'd') return raw_word.slice(0, -1) + 'þ';
+
 	// If second to last character is 'd' and last is 's', devoice 'd' to 'þ'
 	// Same idea with 'b'; devoice to 'f'
-	if (scnd_lastchar == 'd' && lastchar == 's') return raw_word.slice(0, -2) + 'þs';
-	if (scnd_lastchar == 'b' && lastchar == 's') return raw_word.slice(0, -2) + 'fs';
+	
+	if (scnd_lastchar == 'd' && lastchar == 's') return raw_word.slice(0, -2) + 'þ' + lastchar;
+	if (scnd_lastchar == 'b' && lastchar == 's') return raw_word.slice(0, -2) + 'f' + lastchar;
+
+	if (scnd_lastchar == 't' && lastchar == 't') return raw_word.slice(0, -2) + 's' + lastchar;
+	if (scnd_lastchar == 'þ' && lastchar == 't') return raw_word.slice(0, -2) + 's' + lastchar;
+	if (scnd_lastchar == 'b' && lastchar == 't') return raw_word.slice(0, -2) + 'f' + lastchar;
 
 	return raw_word;
 }
@@ -112,4 +104,15 @@ export function revoice(raw_stem) {
 
 	return raw_stem;
 
+}
+
+export function lower_vowel(vowel, consonant) {
+	let lowered_vowel = vowel;
+	if (vowel == 'u' && consonant == 'r') {
+		lowered_vowel = 'au';
+	}
+	else if (vowel == 'i' && (consonant == 'r' || consonant == 'h' || consonant == 'ƕ')) {
+		lowered_vowel = 'ai';
+	}
+	return lowered_vowel;
 }
