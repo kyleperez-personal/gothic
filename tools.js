@@ -2,12 +2,46 @@
 // Too used to Python + friends
 export function print(arg) { console.log(arg); }
 
+export function reverse(str) { return [...str].reverse().join(""); }
+
 export function isVowel(x) { 
 	return ("aeiouAEIOU".indexOf(x) != -1); 
 }
 
 export function isConsanant(x) {
 	return !isVowel(x);
+}
+
+export function num_consonants_at_end(str) {
+	let rev_str = reverse(str);
+	let consonant_str_ending_len = 0;
+	for (let char of rev_str) {
+		if (isConsanant(char)) consonant_str_ending_len++;
+		else break;
+	}
+	return consonant_str_ending_len;
+}
+
+export function replace_ending_vowel(str, base_vowel, ablaut_vowel) {
+	//print('arg: ' + str);
+	//print('base vowel: ' + base_vowel);
+	//print('ablaut vowel: ' + ablaut_vowel);
+	let novowel_str = str.slice(0, -1*base_vowel.length);
+	//let removed_vowel = str.slice(-1*base_vowel.length);
+	//print('removed vowel: ' + removed_vowel);
+	let ablauted_str = novowel_str + ablaut_vowel;
+	return ablauted_str;
+	
+	
+	
+	/*if (ablauted_str.slice(-1*base_vowel.length) == base_vowel) {
+		let retrimmed_str = novowel_str.slice(0, -1*base_vowel.length);
+		print('Going recursive');
+		return replace_ending_vowel(retrimmed_str, base_vowel, ablaut_vowel);
+	}
+	else {
+		return ablauted_str;
+	}*/
 }
 
 // Allowed consanants, vowels, and Long and short vowels
