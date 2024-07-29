@@ -7,17 +7,17 @@ import * as Moods from './language_properties/moods.js'
 import * as Tenses from './language_properties/tenses.js'
 import * as Persons from './language_properties/persons.js'
 import * as Adjectives from './adjective.js'
+import * as VerbClasses from './language_properties/verb_classes.js'
 
 // Data container for verb tenses
 class verbtype {
-	constructor(name, infinitive_ending, ablaut, morpher, reduplication, has_past_participle, conjugation_endings) {
+	constructor(name, infinitive_ending, verb_class, morpher, has_past_participle, conjugation_endings) {
 		this.name = name;
 		this.infinitive_ending = infinitive_ending.substring(1);
 		this.conjugation_endings = conjugation_endings;
-		this.ablaut = ablaut;
+		this.verb_class = verb_class;
 		this.morpher = morpher;// is a string for forming preterite root when ablaut is false
 		// Contains an ablaut pattern of ['a' 'e', 'u'], etc for forming preterites for strong verbs
-		this.reduplication = reduplication;
 		this.has_past_participle = has_past_participle;
 	}
 }
@@ -27,39 +27,29 @@ class verbtype {
 // [indicative, imperative, subjunctive]
 // each mood is like [present, past, present passive]
 // each tense like [1st, 2nd, 3rd]
-const no_verb_endings = new verbtype('No Endings', '-', false, '-id', true, [[[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], , [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]]]);
-const indeclinable = new verbtype('Indeclinable', '-', false, '-id', true, [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]]);
+const no_verb_endings = new verbtype('No Endings', '-', VerbClasses.Weak, '-id', true, [[[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], , [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]]]);
+const indeclinable = new verbtype('Indeclinable', '-', VerbClasses.Weak, '-id', true, [[[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]], [[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']], [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]]]);
 
 // Verbs formed via prefixing to form preterite
-const weak_verb_class_1 = new verbtype('Weak Class 1', '-an', false, '-id', false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-ei', '-its', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const weak_verb_class_2 = new verbtype('Weak Class 2', '-on', false, '-od', false, true, [[[['-o', '-os', '-om'], ['-os', '-ots', '-oþ'], ['-oþ', '--', '-ond']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-oda', '--', '-onda'], ['-oza', '--', '-onda'], ['-oda', '--', '-onda']]], [[['--', '--', '--'], ['-o', '-ots', '-oþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-o', '-owa', '-oma'], ['-os', '-ots', '-oþ'], ['-o', '--', '-ona']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-odau', '--', '-ondau'], ['-ozau', '--', '-ondau'], ['-odau', '--', '-ondau']]]]);
-const weak_verb_class_3 = new verbtype('Weak Class 3', '-an', false, '-aid', false, true, [[[['-a', '-os', '-am'], ['-ais', '-aits', '-aiþ'], ['-aiþ', '--', '-and']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-ai', '-aits', '-aiþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const weak_verb_class_4 = new verbtype('Weak Class 4', '-nan', false, '-nod', false, false, [[[['-na', '-nos', '-nam'], ['-nis', '-nats', '-niþ'], ['-niþ', '--', '-nand']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['-n', '-nats', '-niþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-nau', '-naiwa', '-naima'], ['-nais', '-naits', '-naiþ'], ['-nai', '--', '-naina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const weak_verb_class_1 = new verbtype('Weak Class 1', '-an', VerbClasses.Weak, '-id', true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-ei', '-its', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const weak_verb_class_2 = new verbtype('Weak Class 2', '-on', VerbClasses.Weak, '-od', true, [[[['-o', '-os', '-om'], ['-os', '-ots', '-oþ'], ['-oþ', '--', '-ond']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-oda', '--', '-onda'], ['-oza', '--', '-onda'], ['-oda', '--', '-onda']]], [[['--', '--', '--'], ['-o', '-ots', '-oþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-o', '-owa', '-oma'], ['-os', '-ots', '-oþ'], ['-o', '--', '-ona']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-odau', '--', '-ondau'], ['-ozau', '--', '-ondau'], ['-odau', '--', '-ondau']]]]);
+const weak_verb_class_3 = new verbtype('Weak Class 3', '-an', VerbClasses.Weak, '-aid', true, [[[['-a', '-os', '-am'], ['-ais', '-aits', '-aiþ'], ['-aiþ', '--', '-and']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-ai', '-aits', '-aiþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const weak_verb_class_4 = new verbtype('Weak Class 4', '-nan', VerbClasses.Weak, '-nod', false, [[[['-na', '-nos', '-nam'], ['-nis', '-nats', '-niþ'], ['-niþ', '--', '-nand']], [['-a', '-edu', '-edum'], ['-es', '-eduts', '-eduþ'], ['-a', '--', '-edun']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['--', '--', '--'], ['-n', '-nats', '-niþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-nau', '-naiwa', '-naima'], ['-nais', '-naits', '-naiþ'], ['-nai', '--', '-naina']], [['-edjau', '-edeiwa', '-edeima'], ['-edeis', '-edeits', '-edeiþ'], ['-edi', '--', '-edeima']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
 
 // Verbs formed via pure ablaut to form preterite
-const strong_verb_class_1 = new verbtype('Strong Class 1', '-an', true, ['ai', 'i', 'i'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const strong_verb_class_2 = new verbtype('Strong Class 2', '-an', true, ['au', 'u', 'u'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const strong_verb_class_3 = new verbtype('Strong Class 3', '-an', true, ['a', 'u', 'u'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const strong_verb_class_4 = new verbtype('Strong Class 4', '-an', true, ['a', 'e', 'u'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const strong_verb_class_5 = new verbtype('Strong Class 5', '-an', true, ['a', 'e', 'i'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-const strong_verb_class_6 = new verbtype('Strong Class 6', '-an', true, ['o', 'o', 'a'], false, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_1 = new verbtype('Strong Class 1', '-an', VerbClasses.StrongAblaut, ['ai', 'i', 'i'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_2 = new verbtype('Strong Class 2', '-an', VerbClasses.StrongAblaut, ['au', 'u', 'u'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_3 = new verbtype('Strong Class 3', '-an', VerbClasses.StrongAblaut, ['a', 'u', 'u'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_4 = new verbtype('Strong Class 4', '-an', VerbClasses.StrongAblaut, ['a', 'e', 'u'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_5 = new verbtype('Strong Class 5', '-an', VerbClasses.StrongAblaut, ['a', 'e', 'i'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
+const strong_verb_class_6 = new verbtype('Strong Class 6', '-an', VerbClasses.StrongAblaut, ['o', 'o', 'a'], true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
 
 // Verbs formed via ablaut and reduplication to form preterite
-const strong_verb_class_7 = new verbtype('Strong Class 7', '-an', true, ['o', 'o', 'a'], true, true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
-
-// Form reduplication of a strong verb stem
-function form_reduplication(stem, reduplication_vowel) {
-	// Get consonant that begins the stem (excluding prefix)
-	// Need to parse things like sai  -> s
-	//                           slep -> s
-
-	// If stem ends in vowel 
-	return stem;
-}
+const strong_verb_class_7 = new verbtype('Strong Class 7', '-an', VerbClasses.StrongReduplication, '-ai-', true, [[[['-a', '-os', '-am'], ['-is', '-ats', '-iþ'], ['-iþ', '--', '-and']], [['-', '-u', '-um'], ['-t', '-uts', '-uþ'], ['-', '--', '-un']], [['-ada', '--', '-anda'], ['-aza', '--', '-anda'], ['-ada', '--', '-anda']]], [[['--', '--', '--'], ['-', '-ats', '-iþ'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']], [['--', '--', '--'], ['--', '--', '--'], ['--', '--', '--']]], [[['-au', '-aiwa', '-aima'], ['-ais', '-aits', '-aiþ'], ['-ai', '--', '-aina']], [['-jau', '-eiwa', '-eima'], ['-eis', '-eits', '-eiþ'], ['-i', '--', '-eina']], [['-aidau', '--', '-aindau'], ['-aizau', '--', '-aindau'], ['-aidau', '--', '-aindau']]]]);
 
 // Getting the root of a noun
-function get_verb_roots(verb_name, verb_infinitive_ending, ablaut, morpher, reduplication) {
-	if (!ablaut) {
+function get_verb_roots(verb_name, verb_infinitive_ending, verb_class, morpher) {
+	if (verb_class == VerbClasses.Weak) {
 		let stem = verb_name.slice(0, -1*verb_infinitive_ending.length);
 		let pstem = stem + morpher.substring(1);
 		if (stem.slice(-1) == 'j') {
@@ -71,7 +61,7 @@ function get_verb_roots(verb_name, verb_infinitive_ending, ablaut, morpher, redu
 		//tools.print('Stem length: ' + stems.length);
 		return stems
 	}
-	else {
+	else if (verb_class == VerbClasses.StrongAblaut) {
 		let stem = verb_name.slice(0, -1*verb_infinitive_ending.length);
 
 		// Split verb stem into consonant ending block and rest of stem
@@ -80,9 +70,6 @@ function get_verb_roots(verb_name, verb_infinitive_ending, ablaut, morpher, redu
 		let rest_of_str = stem.substring(0, stem.length - consonant_ending_block_len);
 		let vowel_str_block_len = tools.num_vowels_at_end(rest_of_str);
 		let beginning = rest_of_str.substring(0, rest_of_str.length-vowel_str_block_len);
-		//tools.print('beginning: ' + beginning);
-		//tools.print('ablautvwl: ' + vowel_to_ablaut);
-		//tools.print('ending:    ' + consanant_ending);
 
 		// Lower vowels when 'u' is before 'r' or 'i' is before 'r', 'h', 'hw'
 		let preterite_singular_ablaut = tools.lower_vowel(morpher[0], consanant_ending.substring(0, 1));
@@ -93,16 +80,55 @@ function get_verb_roots(verb_name, verb_infinitive_ending, ablaut, morpher, redu
 		let p2_stem = beginning + preterite_plural_ablaut + consanant_ending;
 		let pp_stem = beginning + past_participle_ablaut + consanant_ending + verb_infinitive_ending;
 		
-		if (reduplication) {
-			const reduplication_vowel = 'ai';
-			p1_stem = form_reduplication(stem, reduplication_vowel);
-			p2_stem = p1_stem;
-			pp_stem = verb_name;
+		tools.print('Sg Stem: ' + p1_stem);
+		tools.print('Pl Stem: ' + p2_stem);
+		tools.print('PP Stem: ' + pp_stem);
+		return [stem, stem, p1_stem, p2_stem, pp_stem];
+	}
+	else if (verb_class == VerbClasses.StrongReduplication) {
+		let stem = verb_name.slice(0, -1*verb_infinitive_ending.length);
+		let reduplicating_vowel = morpher.substring(1, morpher.length-1);
+
+		// Split verb stem into consonant ending block and rest of stem
+		let consonant_ending_block_len = tools.num_consonants_at_end(stem);
+		let consanant_ending = stem.substring(stem.length - consonant_ending_block_len);
+		let rest_of_str = stem.substring(0, stem.length - consonant_ending_block_len);
+		let vowel_str_block_len = tools.num_vowels_at_end(rest_of_str);
+		let beginning = rest_of_str.substring(0, rest_of_str.length-vowel_str_block_len);
+
+		// Get consonant to be duplicated
+		// All known examples suggest that it's the consonant cluster at the start of the vowel stem
+		// Unless vowel has 'f' in that cluster, in which case, it's just 'f'
+		let duplicated_consonant = beginning;
+		if (duplicated_consonant.slice(-2, -1) == 'f') {
+			duplicated_consonant = duplicated_consonant.slice(0, -1);
 		}
-		
+
+		// Vowel to use in non-reduplicated portion
+		// If infinitive uses 'e' in stem, then it is changed to 'o' in preterite
+		// Except for 'slepan' for some reason, only exception!
+		// 'ai' in stem is usual standard in preterite, except for 2 exceptions!
+		// 'au' behaves normally in one example, differently in another!
+		let ablaut_vowel = stem.substring(rest_of_str.length-vowel_str_block_len, stem.length - consonant_ending_block_len);
+		if (ablaut_vowel == 'e' && beginning != 'sl') {
+			ablaut_vowel = 'o';
+		}
+		else if (ablaut_vowel == 'ai' && (beginning == 's' || beginning == 'w')) {
+			ablaut_vowel = 'o';
+		}
+		else if (ablaut_vowel == 'au' && beginning == 'l') {
+			ablaut_vowel = 'o';
+		}
+		//tools.print(ablaut_vowel);
+
+		let p1_stem = duplicated_consonant + reduplicating_vowel + beginning + ablaut_vowel + consanant_ending;
+		let p2_stem = p1_stem;
+		let pp_stem = verb_name;
+
 		//tools.print('Sg Stem: ' + p1_stem);
 		//tools.print('Pl Stem: ' + p2_stem);
 		//tools.print('PP Stem: ' + pp_stem);
+
 		return [stem, stem, p1_stem, p2_stem, pp_stem];
 	}
 }
@@ -117,10 +143,9 @@ class verb {
 		this.name = name;
 		this.infinitive = name;
 		this.infinitive_ending = verb_type.infinitive_ending;
-		this.ablaut = verb_type.ablaut;
+		this.verb_class = verb_type.verb_class;
 		this.morpher = verb_type.morpher;
-		this.reduplication = verb_type.reduplication;
-		this.stems = get_verb_roots(name, this.infinitive_ending, this.ablaut, this.morpher, this.reduplication);
+		this.stems = get_verb_roots(name, this.infinitive_ending, this.verb_class, this.morpher);
 		this.root = this.stems[0];
 		this.is_long_jstem = this.#is_long_jstem();
 		this.conjugation_endings = verb_type.conjugation_endings;
@@ -210,7 +235,7 @@ class verb {
 			return ending;
 		}
 		// Weak verbs that end with j in stem
-		else if (!this.ablaut && stem.slice(-1) == 'j') {
+		else if (stem.slice(-1) == 'j') {
 			// Need to go from sokj- to soki- for past tense, or the imperative sokei, etc
 			if (verb_tense == Tenses.Past || ending.substring(0, 1) == 'e') {
 				stem = stem.slice(0, -1);
@@ -220,7 +245,7 @@ class verb {
 				stem = stem.slice(0, -1) + 'e';
 			}
 		}
-		else if (this.ablaut && verb_tense == Tenses.Past && verb_mood == Moods.Subjunctive) {
+		else if (this.verb_class != VerbClasses.Weak && verb_tense == Tenses.Past && verb_mood == Moods.Subjunctive) {
 			stem = this.stems[3]; // Strong verbs always use the plural preterite ablaut form for subjunctive, regardless of number
 		}
 		conjugation = stem + ending;
@@ -351,11 +376,36 @@ qiþan.print_cases();
 // Strong Verb Class 5 (alternate devoicing type)
 let saiƕan = new verb('saiƕan', strong_verb_class_5, NoOverrides, 'to see');
 saiƕan.print_cases();
-*/
+
 // Strong Verb Class 6
 let faran = new verb('faran', strong_verb_class_6, NoOverrides, 'to travel');
 //faran.print_cases();
 
-// Strong Verb Class 7
+// Strong Verb Class 7 that is unusual for lack of ablaut to 'o'
 let slepan = new verb('slepan', strong_verb_class_7, NoOverrides, 'to sleep');
-//slepan.print_cases();
+slepan.print_cases();
+
+// Other weird Strong Verb Class 7
+let lauan = new verb('lauan', strong_verb_class_7, NoOverrides, 'to revile');
+lauan.print_cases();
+
+// Yet another one of them
+let fraisan = new verb('fraisan', strong_verb_class_7, NoOverrides, 'to tempt');
+fraisan.print_cases();
+
+// Pretty standard, just weird for not having a consonant at its start
+let aukan = new verb('aukan', strong_verb_class_7, NoOverrides, 'to increase');
+aukan.print_cases();
+
+// Strong Verb Class 7 that sees ablaut in stem vowel
+let tekan = new verb('tekan', strong_verb_class_7, NoOverrides, 'to touch');
+tekan.print_cases();
+*/
+
+// Strong Verb Class 5 that uses a different infinitive for present versus preterite
+let bidjan = new verb('bidjan', strong_verb_class_5, NoOverrides, 'to pray');
+bidjan.print_cases();
+// For some reason is getting the preterite indicative exactly right
+// But not preterite subjunctive
+// Also imperative needs to be fixed
+// And Past Participle
