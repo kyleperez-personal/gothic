@@ -33,6 +33,7 @@ const rstem = new nountype('-r stem', [['-ar', '--', '-jus'], ['-s', '--', '-e']
 const strong_ustem = new nountype('Strong (-u stem)', [['-us', '--', '-jus'], ['-aus', '--', '-iwe'], ['-au', '--', '-um'], ['-u', '--', '-uns'], ['-au', '--', '-jus']]);
 const strong_neuter_ustem = new nountype('Strong Neuter (-u stem)', [['-u', '--', '--'], ['--', '--', '--'], ['-au', '--', '--'], ['-u', '--', '--'], ['--', '--', '--']]);
 
+const NoReflexives = ['--', '--', '--', '--', '--'];
 
 //Overriding certain endings
 const NoOverrides = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]
@@ -62,15 +63,18 @@ const NoSpecializations = [];
 // Container for holding a noun
 class noun {
 
-	constructor(name, noun_gender, definition="No definition", specializations=NoSpecializations, overrides=NoOverrides) {
+	#gender;
+
+	constructor(name, noun_gender, definition="No definition", specializations=NoSpecializations, overrides=NoOverrides, reflexives=NoReflexives) {
 		this.name = name;
-		this.gender = noun_gender;
+		this.#gender = noun_gender;
 		this.definition = definition;
 		this.specializations = specializations;
 		this.is_long_jstem = false;
 		this.endings = no_endings;
 		this.root = this.#determine_noun();
 		this.overrides = overrides;
+		this.reflexives = reflexives;
 	}
 
 	// Getting the root of a noun
@@ -109,7 +113,7 @@ class noun {
 		// Logic if swapping gender!
 
 		// First determine root
-		switch(this.gender) {
+		switch(this.#gender) {
 			case Genders.Masculine:
 				// R ending strong-masculine case or r-stem nouns:
 				if (ending == 'r') {
@@ -207,7 +211,7 @@ class noun {
 				}
 				break;
 			default:
-				throw new Error("Unrecognized gender '" + this.gender.name + "' used to build noun '" + this.name + "'.");
+				throw new Error("Unrecognized gender '" + this.#gender.name + "' used to build noun '" + this.name + "'.");
 		}
 
 		if (getsDevoiced) {
@@ -263,7 +267,15 @@ class noun {
 		let root_twoending = this.root.slice(-2);
 
 		// Just outright read from overrides if they exist
-		let override = this.overrides[noun_case.number][noun_number.number];
+		let override = '';
+		try {
+			override = this.overrides[noun_case.number][noun_number.number];
+			if (Array.isArray(override)) {
+				override = this.overrides[this.#gender.number][noun_case.number][noun_number.number];
+			}
+		} catch {
+			override = this.overrides[this.#gender.number][noun_case.number][noun_number.number];
+		}
 		if (override != '-') return override;
 
 		// Handle indeclinable nouns
@@ -278,7 +290,7 @@ class noun {
 		// Return placeholder for nonexistent declinations
 		if (ending == '-') return '--';
 
-		switch (this.gender) {
+		switch (this.#gender) {
 			case Genders.Masculine:
 				if (isRStem && ending == 'ar') {
 					start = start.slice(0, -1);
@@ -311,7 +323,7 @@ class noun {
 				if (start.slice(-1) + ending == 'jis') {
 					start = start.slice(0, -1) + 'e';
 				}
-				else if (ending == 'a' && noun_case != Cases.Accusative && this.gender == Genders.Feminine) {
+				else if (ending == 'a' && noun_case != Cases.Accusative && this.#gender == Genders.Feminine) {
 					if (start.slice(-2) == 'uj') start = start.slice(0, -2) + 'wi';
 					else start = start.slice(0, -1) + 'i';
 					ending = '';
@@ -333,34 +345,67 @@ class noun {
 	print_cases() {
 
 		let ns_decline = this.decline(Cases.Nominative, Numbers.Singular);
-		//let nd_decline = this.decline(Cases.Nominative, Numbers.Dual);
+		let nd_decline = this.decline(Cases.Nominative, Numbers.Dual);
 		let np_decline = this.decline(Cases.Nominative, Numbers.Plural);
 		let gs_decline = this.decline(Cases.Genitive, Numbers.Singular);
-		//let gd_decline = this.decline(Cases.Genitive, Numbers.Dual);
+		let gd_decline = this.decline(Cases.Genitive, Numbers.Dual);
 		let gp_decline = this.decline(Cases.Genitive, Numbers.Plural);
 		let ds_decline = this.decline(Cases.Dative, Numbers.Singular);
-		//let dd_decline = this.decline(Cases.Dative, Numbers.Dual);
+		let dd_decline = this.decline(Cases.Dative, Numbers.Dual);
 		let dp_decline = this.decline(Cases.Dative, Numbers.Plural);
 		let as_decline = this.decline(Cases.Accusative, Numbers.Singular);
-		//let ad_decline = this.decline(Cases.Accusative, Numbers.Dual);
+		let ad_decline = this.decline(Cases.Accusative, Numbers.Dual);
 		let ap_decline = this.decline(Cases.Accusative, Numbers.Plural);
 		let vs_decline = this.decline(Cases.Vocative, Numbers.Singular);
-		//let vd_decline = this.decline(Cases.Vocative, Numbers.Dual);
+		let vd_decline = this.decline(Cases.Vocative, Numbers.Dual);
 		let vp_decline = this.decline(Cases.Vocative, Numbers.Plural);
 
+		let isPronoun = this.specializations.includes(Pronoun);
+		let hasReflexives = (this.reflexives != NoReflexives);
+
 		let max_singular_col_len = Math.max(Numbers.Singular.name.length, ns_decline.length, gs_decline.length, ds_decline.length, as_decline.length, vs_decline.length);
+		let max_dual_col_len = Math.max(Numbers.Dual.name.length, nd_decline.length, gd_decline.length, dd_decline.length, ad_decline.length, vd_decline.length);
 		let max_plural_col_len = Math.max(Numbers.Plural.name.length, np_decline.length, gp_decline.length, dp_decline.length, ap_decline.length, vp_decline.length);
 
 		max_singular_col_len++;
+		max_dual_col_len++;
 		max_plural_col_len++;
 
 		let top_header = 'Inflections of ' + this.name;
-		let header = 'Case ' + Numbers.Singular.name + ' '.repeat(max_singular_col_len-Numbers.Singular.name.length) + Numbers.Plural.name;
-		let nominative_line = 'Nom: ' + ns_decline + ' '.repeat(max_singular_col_len-ns_decline.length)  + np_decline;
-		let genitive_line = 'Gen: ' + gs_decline + ' '.repeat(max_singular_col_len-gs_decline.length) + gp_decline;
-		let dative_line = 'Dat: ' + ds_decline + ' '.repeat(max_singular_col_len-ds_decline.length) + dp_decline;
-		let accusative_line = 'Acc: ' + as_decline + ' '.repeat(max_singular_col_len-as_decline.length) + ap_decline;
-		let vocative_line = 'Voc: ' + vs_decline + ' '.repeat(max_singular_col_len-vs_decline.length) + vp_decline;
+		let header = 'Case ' + Numbers.Singular.name + ' '.repeat(max_singular_col_len-Numbers.Singular.name.length);
+		let nominative_line = 'Nom: ' + ns_decline + ' '.repeat(max_singular_col_len-ns_decline.length);
+		let genitive_line = 'Gen: ' + gs_decline + ' '.repeat(max_singular_col_len-gs_decline.length);
+		let dative_line = 'Dat: ' + ds_decline + ' '.repeat(max_singular_col_len-ds_decline.length);
+		let accusative_line = 'Acc: ' + as_decline + ' '.repeat(max_singular_col_len-as_decline.length);
+		let vocative_line = 'Voc: ' + vs_decline + ' '.repeat(max_singular_col_len-vs_decline.length);
+		
+		// Only pronouns have dual cases
+		if (isPronoun) {
+			header += Numbers.Dual.name + ' '.repeat(max_dual_col_len-Numbers.Dual.name.length);
+			nominative_line += nd_decline + ' '.repeat(max_dual_col_len-nd_decline.length);
+			genitive_line += gd_decline + ' '.repeat(max_dual_col_len-gd_decline.length);
+			dative_line += dd_decline + ' '.repeat(max_dual_col_len-dd_decline.length);
+			accusative_line += ad_decline + ' '.repeat(max_dual_col_len-ad_decline.length);
+			vocative_line += vd_decline + ' '.repeat(max_dual_col_len-vd_decline.length);
+		}
+		
+		header += Numbers.Plural.name;
+		nominative_line += np_decline;
+		genitive_line += gp_decline;
+		dative_line += dp_decline;
+		accusative_line += ap_decline;
+		vocative_line += vp_decline;
+
+		if (hasReflexives) {
+			header += ' '.repeat(max_plural_col_len-Numbers.Plural.name.length) + 'Reflexive'
+			nominative_line += ' '.repeat(max_plural_col_len-np_decline.length) + this.reflexives[Cases.Nominative.number];
+			genitive_line += ' '.repeat(max_plural_col_len-gp_decline.length) + this.reflexives[Cases.Genitive.number];
+			dative_line += ' '.repeat(max_plural_col_len-dp_decline.length) + this.reflexives[Cases.Dative.number];
+			accusative_line += ' '.repeat(max_plural_col_len-ap_decline.length) + this.reflexives[Cases.Accusative.number];
+			vocative_line += ' '.repeat(max_plural_col_len-vp_decline.length) + this.reflexives[Cases.Vocative.number];
+		}
+
+		
 		tools.print(top_header);
 		tools.print(header);
 		tools.print(nominative_line);
@@ -374,6 +419,21 @@ class noun {
 
 	print_definition() {
 		tools.print('Definition of "' + this.name + '": ' + this.definition + '.');
+	}
+
+	gender() {
+		return this.#gender;
+	}
+
+	set_gender(newGender) {
+		let isPronoun = this.specializations.includes(Pronoun);
+		let SwapsGender = this.specializations.includes(GenderSwaps);
+
+		if (!isPronoun && !SwapsGender) {
+			throw new Error("Cannot change the gender of noun '" + this.name + "'.");
+		}
+
+		this.#gender = newGender;
 	}
 
 }
@@ -533,31 +593,44 @@ hauseins.print_cases();
 // Special Verbal Noun: gairnei
 let gairnei = new noun('gairnei', Genders.Feminine, 'desire', [VerbalNoun], NoOverrides);
 gairnei.print_cases();
+*/
 
+/*
 // Class 3 Weak Verbal Noun:
 let libains = new noun('libains', Genders.Feminine, 'life', [VerbalNoun], NoOverrides);
 libains.print_cases();
-*/
 
-
-
-/*
 // Pronouns
 const first_person_pronoun_inflections = [['ik', 'wit', 'weis'], ['meina', '-', 'unsis'], ['mis', 'ugkis', 'uns'], ['mik', 'ugkis', 'uns'], ['-', '-', '-']];
-let ik = new pronoun('ik', [first_person_pronoun_inflections, first_person_pronoun_inflections, first_person_pronoun_inflections], ['-', '-', '-'], 'I, me, mine');
+let ik = new noun('ik', Genders.Masculine, 'I, me, mine', [GenderSwaps, Pronoun], first_person_pronoun_inflections);
 ik.print_cases();
+//ik.set_gender(Genders.Neuter);
 
 const second_person_pronoun_inflections = [['þu', 'jut', 'jus'], ['þeina', 'igqara', 'izwara'], ['þus', 'igqis', 'izwis'], ['þuk', 'igqis', 'izwis'], ['-', '-', '-']];
-let þu = new pronoun('þu', [second_person_pronoun_inflections, second_person_pronoun_inflections, second_person_pronoun_inflections], ['-', '-', '-'], 'You, you two, yours');
+let þu = new noun('þu', Genders.Masculine, 'you, yours', [GenderSwaps, Pronoun], second_person_pronoun_inflections);
 þu.print_cases();
+
+
 
 const third_person_pronoun_masculine_inflections = [['is', '-', 'eis'], ['is', '-', 'ize'], ['imma', '-', 'im'], ['ina', '-', 'ins'], ['-', '-', '-']];
 const third_person_pronoun_neuter_inflections = [['ita', '-', 'ija'], ['is', '-', 'ize'], ['imma', '-', 'im'], ['ita', '-', 'ija'], ['-', '-', '-']];
 const third_person_pronoun_feminine_inflections = [['si', '-', 'ijos'], ['izos', '-', 'izo'], ['izai', '-', 'im'], ['ija', '-', 'ijos'], ['-', '-', '-']];
-const third_person_pronoun_reflexives = ['seina', 'sis', 'sik'];
-let is = new pronoun('is', [third_person_pronoun_masculine_inflections, third_person_pronoun_neuter_inflections, third_person_pronoun_feminine_inflections], third_person_pronoun_reflexives, 'He, it, her, they, etc');
+const third_person_pronoun_inflections = [third_person_pronoun_masculine_inflections, third_person_pronoun_neuter_inflections, third_person_pronoun_feminine_inflections];
+const third_person_pronoun_reflexives = ['--', 'seina', 'sis', 'sik', '--'];
+let is = new noun('is', Genders.Masculine, 'he, she it, they, theirs', [GenderSwaps, Pronoun], third_person_pronoun_inflections, third_person_pronoun_reflexives);
 is.print_cases();
+is.set_gender(Genders.Neuter);
+is.print_cases();
+is.set_gender(Genders.Feminine);
+is.print_cases();
+*/
 
+
+
+
+
+// Here
+/*
 const interrogative_pronoun_masculine_inflections = [['ƕas', '-', '-'], ['ƕis', '-', '-'], ['ƕamma', '-', '-'], ['ƕana', '-', '-'], ['-', '-', '-']];
 const interrogative_pronoun_neuter_inflections = [['ƕa', '-', '-'], ['ƕis', '-', '-'], ['ƕamma', '-', '-'], ['ƕa', '-', '-'], ['-', '-', '-']];
 const interrogative_pronoun_feminine_inflections = [['ƕos', '-', '-'], ['ƕizos', '-', '-'], ['ƕizai', '-', '-'], ['ƕo', '-', '-'], ['-', '-', '-']];

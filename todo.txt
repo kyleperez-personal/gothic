@@ -1,7 +1,5 @@
 Things left to do with nouns:
 
-Reimplement pronouns as nouns
-
 How to handle the special noun 'sunno', which uses 3 genders depending on case.
 Not sure how to deal with, but pronouns will be useful for this.
 
