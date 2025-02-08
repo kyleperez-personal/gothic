@@ -27,20 +27,11 @@ const strong_feminine = new nountype('Strong Feminine', [['-a', '--', '-os'], ['
 const weak_feminine = new nountype('Weak Feminine (-ei ending)', [['-', '--', '-ns'], ['-ns', '--', '-no'], ['-n', '--', '-m'], ['-n', '--', '-ns'], ['-', '--', '-ns']]);
 const strong_feminine_istem = new nountype('Strong Feminine (-i stem)', [['-s', '--', '-eis'], ['-ais', '--', '-e'], ['-ai', '--', '-im'], ['-', '--', '-ins'], ['-s', '--', '-eis']]);
 const bare_feminine = new nountype('Feminine', [['-s', '--', '-s'], ['-s', '--', '-e'], ['-', '--', '-im'], ['-', '--', '-s'], ['-', '--', '-s']]);
+const class1weak_verbal = new nountype('Weak Verbal Noun (Class 1)', [['-s', '--', '-os'], ['-ais', '--', '-o'], ['-ai', '--', '-im'], ['-', '--', '-ins'], ['--', '--', '--']]);
 
 const rstem = new nountype('-r stem', [['-ar', '--', '-jus'], ['-s', '--', '-e'], ['-', '--', '-um'], ['-ar', '--', '-uns'], ['-ar', '--', '-jus']]);
 const strong_ustem = new nountype('Strong (-u stem)', [['-us', '--', '-jus'], ['-aus', '--', '-iwe'], ['-au', '--', '-um'], ['-u', '--', '-uns'], ['-au', '--', '-jus']]);
 const strong_neuter_ustem = new nountype('Strong Neuter (-u stem)', [['-u', '--', '--'], ['--', '--', '--'], ['-au', '--', '--'], ['-u', '--', '--'], ['--', '--', '--']]);
-
-
-const special_manna = new nountype('Manna', [['-na', '--', '-nans'], ['-s', '--', '-ne'], ['-n', '--', '-nam'], ['-nan', '--', '-nans'], ['--', '--', '--']])
-const special_menoþs = new nountype('Special Class (Menoþs)', [['-s', '--', '-s'], ['--', '--', '--'], ['-', '--', '-um'], ['--', '--', '-s'], ['--', '--', '--']]);
-const special_weitwoþs = new nountype('Special Class (Weitwoþs)', [['-þs', '--', '-þs'], ['--', '--', '-de'], ['--', '--', '--'], ['-d', '--', '--'], ['--', '--', '--']]);
-const special_fon = new nountype('Special Class (Fon)', [['-on', '--', '--'], ['-unins', '--', '--'], ['-unin', '--', '--'], ['-on', '--', '--'], ['--', '--', '--']]);
-
-const class1weak_verbal = new nountype('Weak Verbal Noun (Class 1)', [['-s', '--', '-os'], ['-ais', '--', '-o'], ['-ai', '--', '-im'], ['-', '--', '-ins'], ['--', '--', '--']]);
-const special_gairnei = weak_feminine;
-const class3weak_verbal = strong_feminine_istem;
 
 
 //Overriding certain endings
@@ -63,6 +54,7 @@ const IStem = new noun_specialization('I-Stem Noun', 'Noun uses I-stem declensio
 const RStem = new noun_specialization('R-Stem Noun', 'Noun uses R-stem declension.');
 const Bare = new noun_specialization('Bare Noun', 'Noun uses bare declension.')
 const ForcedLongVowel = new noun_specialization('Forced Long Vowel', 'This noun has an abnormal long vowel in the syllable preceeding the root ending.')
+const VerbalNoun = new noun_specialization('Verbal Noun', 'Noun is derived from a verb.');
 
 const NoSpecializations = [];
 
@@ -78,8 +70,6 @@ class noun {
 		this.is_long_jstem = false;
 		this.endings = no_endings;
 		this.root = this.#determine_noun();
-		//tools.print('Root: ' + this.root);
-		//tools.print('Is ' + name + ' a long j stem? ' + this.is_long_jstem);
 		this.overrides = overrides;
 	}
 
@@ -99,12 +89,22 @@ class noun {
 		let isBare = this.specializations.includes(Bare);
 		let SwapsGender = this.specializations.includes(GenderSwaps);
 		let hasForcedLongVowel = this.specializations.includes(ForcedLongVowel);
+		let isVerbalNoun = this.specializations.includes(VerbalNoun);
 
 		if (isIndeclinable) {
 			this.endings = indeclinable;
 			return this.name;
 		}
 		else if (isPronoun) return "No Root";
+		else if (isVerbalNoun) {
+			let fourending = this.name.slice(-4);
+			if (fourending == 'eins') this.endings = class1weak_verbal;
+			else if (twoending == 'ei') this.endings = weak_feminine;
+			else if (fourending == 'ains') this.endings = strong_feminine_istem;
+			
+			if (twoending == 'ei') return this.name;
+			else return this.name.slice(0, -1);
+		}
 
 		// Logic if swapping gender!
 
@@ -201,6 +201,10 @@ class noun {
 					stem = this.name.slice(0, -1);
 					this.endings = strong_feminine;
 				}
+				else if (isRStem) {
+					stem = this.name.slice(0, -2) + 'r';
+					this.endings = rstem;
+				}
 				break;
 			default:
 				throw new Error("Unrecognized gender '" + this.gender.name + "' used to build noun '" + this.name + "'.");
@@ -258,6 +262,10 @@ class noun {
 		let root_ending = this.root.slice(-1);
 		let root_twoending = this.root.slice(-2);
 
+		// Just outright read from overrides if they exist
+		let override = this.overrides[noun_case.number][noun_number.number];
+		if (override != '-') return override;
+
 		// Handle indeclinable nouns
 		if (isIndeclinable) {
 			declination = this.root;
@@ -282,6 +290,10 @@ class noun {
 			case Genders.Neuter:
 				break;
 			case Genders.Feminine:
+				if (isRStem && ending == 'ar') {
+					start = start.slice(0, -1);
+				}
+				break;
 				
 		}
 
@@ -294,9 +306,12 @@ class noun {
 			else if (ending == 's') {
 				ending = 'i' + ending;
 			}
-			else if (this.is_long_jstem) {
-				if (start.slice(-1) + ending == 'jis') start = start.slice(0, -1) + 'e';
-				if (ending == 'a' && noun_case != Cases.Accusative) {
+
+			if (this.is_long_jstem) {
+				if (start.slice(-1) + ending == 'jis') {
+					start = start.slice(0, -1) + 'e';
+				}
+				else if (ending == 'a' && noun_case != Cases.Accusative && this.gender == Genders.Feminine) {
 					if (start.slice(-2) == 'uj') start = start.slice(0, -2) + 'wi';
 					else start = start.slice(0, -1) + 'i';
 					ending = '';
@@ -477,44 +492,53 @@ handus.print_cases();
 // Bare Feminine Noun
 let baurgs = new noun('baurgs', Genders.Feminine, 'city', [Bare], NoOverrides);
 baurgs.print_cases();
+
+// R Stem Feminine Noun
+let swistar = new noun('swistar', Genders.Feminine, 'sister', [RStem], NoOverrides);
+swistar.print_cases();
 */
 
 /*
 // Strong masculine noun with long j stem and irregular accusative ending
 const andeis_overrides = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-'], ['-', '-', 'andins'], ['-', '-', '-']]
-let andeis = new noun('andeis', Genders.Masculine, strong_masculine_jstem_longvowel, false, andeis_overrides, 'end');
+let andeis = new noun('andeis', Genders.Masculine, 'end', NoSpecializations, andeis_overrides);
 andeis.print_cases();
 
 // Special Noun: menoþs
-let menoþs = new noun('menoþs', Genders.Masculine, special_menoþs, false, NoOverrides, 'month');
+const menoþs_inflections = [['menoþs', '--', 'menoþs'], ['--', '--', '--'], ['menoþ', '--', 'menoþum'], ['--', '--', 'menoþs'], ['--', '--', '--']];
+let menoþs = new noun('menoþs', Genders.Masculine, 'month', NoSpecializations, menoþs_inflections);
 menoþs.print_cases();
 
 // Special Noun: weitwoþs
-let weitwoþs = new noun('weitwoþs', Genders.Masculine, special_weitwoþs, false, NoOverrides, 'witness');
+const weitwoþs_inflections = [['weitwoþs', '--', 'weitwoþs'], ['--', '--', 'weitwode'], ['--', '--', '--'], ['weitwod', '--', '--'], ['--', '--', '--']];
+let weitwoþs = new noun('weitwoþs', Genders.Masculine, 'witness', [Devoices], weitwoþs_inflections);
 weitwoþs.print_cases();
 
 // Special Noun: fon
-let fon = new noun('fon', Genders.Neuter, special_fon, false, NoOverrides, 'fire');
+const fon_inflections = [['fon', '--', '--'], ['funins', '--', '--'], ['funin', '--', '--'], ['fon', '--', '--'], ['--', '--', '--']];
+let fon = new noun('fon', Genders.Neuter, 'fire', NoSpecializations, fon_inflections);
 fon.print_cases();
 
-// Class 1 Weak Verbal Noun
-let hauseins = new noun('hauseins', Genders.Feminine, class1weak_verbal, false, NoOverrides, 'hearing');
-hauseins.print_cases();
-
-// Special Verbal Noun: gairnei
-let gairnei = new noun('gairnei', Genders.Feminine, special_gairnei, false, NoOverrides, 'desire');
-gairnei.print_cases();
-
-// Class 3 Weak Verbal Noun:
-let libains = new noun('libains', Genders.Feminine, class3weak_verbal, false, NoOverrides, 'life');
-libains.print_cases();
+// Special Noun: manna
+const manna_inflections = [['manna', '--', 'mannans'], ['mans', '--', 'manne'], ['mann', '--', 'mannam'], ['mannan', '--', 'mannans'], ['--', '--', '--']];
+let manna = new noun('manna', Genders.Masculine, 'man', NoSpecializations, manna_inflections);
+manna.print_cases();
 */
 
 /*
-// Special Noun: manna
-let manna = new noun('manna', Genders.Masculine, special_manna, false, NoOverrides, 'person, man');
-manna.print_cases();
+// Class 1 Weak Verbal Noun
+let hauseins = new noun('hauseins', Genders.Feminine, 'sense of hearing, report, word, teaching', [VerbalNoun], NoOverrides);
+hauseins.print_cases();
+
+// Special Verbal Noun: gairnei
+let gairnei = new noun('gairnei', Genders.Feminine, 'desire', [VerbalNoun], NoOverrides);
+gairnei.print_cases();
+
+// Class 3 Weak Verbal Noun:
+let libains = new noun('libains', Genders.Feminine, 'life', [VerbalNoun], NoOverrides);
+libains.print_cases();
 */
+
 
 
 /*
