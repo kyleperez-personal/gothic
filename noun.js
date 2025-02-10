@@ -261,7 +261,6 @@ class noun {
 
 		let declination = '???';
 		let ending = this.endings.endings[noun_case.number][noun_number.number].substring(1);
-		tools.print('-' + ending);
 		let root_ending = this.root.slice(-1);
 		let root_twoending = this.root.slice(-2);
 
@@ -276,7 +275,7 @@ class noun {
 			else if (!isPronoun && SwapsGender) {
 				this.#gender = override;
 				this.root = this.#determine_noun();
-				//tools.print(this.root + ' -- ' + this.endings.name);
+				ending = this.endings.endings[noun_case.number][noun_number.number].substring(1);
 				override = '-';
 			}
 		} catch {
@@ -339,7 +338,6 @@ class noun {
 		}
 
 		declination = start + ending;
-		tools.print(start + ' -- ' + ending + ' -- ' + this.#gender.name);
 
 		if (getsDevoiced) {
 			declination = tools.devoice(declination);
@@ -434,9 +432,13 @@ class noun {
 
 	set_gender(newGender) {
 		let SwapsGender = this.specializations.includes(GenderSwaps);
+		let isPronoun = this.specializations.includes(Pronoun);
 
 		if (!SwapsGender) {
 			throw new Error("Cannot change the gender of noun '" + this.name + "'.");
+		}
+		else if (!isPronoun) {
+			throw new Error("Noun '" + this.name + "' cannot change its gender via the set_gender() function. Only pronouns can use this! General nouns have predetermined genders.");
 		}
 
 		this.#gender = newGender;
@@ -595,11 +597,11 @@ manna.print_cases();
 // Class 1 Weak Verbal Noun
 let hauseins = new noun('hauseins', Genders.Feminine, 'sense of hearing, report, word, teaching', [VerbalNoun], NoOverrides);
 hauseins.print_cases();
-*/
+
 // Special Verbal Noun: gairnei
 let gairnei = new noun('gairnei', Genders.Feminine, 'desire', [VerbalNoun], NoOverrides);
 gairnei.print_cases();
-
+*/
 
 /*
 // Class 3 Weak Verbal Noun:
@@ -692,10 +694,11 @@ ni_ainshun.set_gender(Genders.Feminine);
 ni_ainshun.print_cases();
 */
 
+/*
 const sunno_genders = [[Genders.Feminine, Genders.Feminine, Genders.Feminine], [Genders.Feminine, Genders.Feminine, Genders.Feminine], [Genders.Neuter, Genders.Neuter, Genders.Neuter], [Genders.Feminine, Genders.Feminine, Genders.Feminine], [Genders.Feminine, Genders.Feminine, Genders.Feminine]];
 let sunno = new noun('sunno', Genders.Feminine, 'the sun (mixed gender)', [GenderSwaps], sunno_genders);
 sunno.print_cases();
-
+*/
 
 
 

@@ -1,7 +1,4 @@
-Things left to do with nouns:
-
-How to handle the special noun 'sunno', which uses 3 genders depending on case.
-Not sure how to deal with, but pronouns will be useful for this.
+Things left to do with nouns: ???
 
 Verbs:
 Need to consider cases where present conjugations use a different infinitive than preterite
